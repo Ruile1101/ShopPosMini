@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Product | MinBookShop{% endblock %}
+{% block content %}<div class="row justify-content-center"><div class="col-lg-7"><div class="card"><div class="card-body p-4"><h1 class="mb-1">Add product</h1><p class="text-muted mb-4">Add a stationery item for quick selection at checkout.</p>
+    <form method="POST">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" name="name" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="price">Price:</label>
+            <input type="number" name="price" class="form-control" min="0" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="quantity">Quantity:</label>
+            <input type="number" name="quantity" class="form-control" min="0" required>
+        </div>
+        <div class="form-group mb-3"><label for="category" class="form-label">Category</label><select name="category" id="category" class="form-select">{% for category in ['Printing', 'Binding', 'Laminating', 'Sticker', 'Stationery', 'Other'] %}<option>{{ category }}</option>{% endfor %}</select></div>
+        <button type="submit" class="btn btn-success">Save product</button> <a href="{{ url_for('main.products') }}" class="btn btn-outline-secondary">Cancel</a>
+    </form></div></div></div></div>{% endblock %}

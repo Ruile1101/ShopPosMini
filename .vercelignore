@@ -1,0 +1,16 @@
+# Local executables, virtual environments, caches, and desktop build outputs
+# must not be included in the Vercel Function bundle.
+venv/
+dist/
+build/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.spec
+error_log.txt
+
+# The local SQLite database remains on the developer machine. Vercel uses the
+# DATABASE_URL environment variable for a persistent shared database instead.
+pos.db
+static/
+app/__init__.py.fixed

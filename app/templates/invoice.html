@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+        Invoice {{ invoice_number }} | Min Book Creation
+    </title>
+
+    <style>
+
+        @page {
+            size: A5 portrait;
+            margin: 0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: #ddd;
+            color: #111;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+
+        /* =========================================================
+           A5 INVOICE
+        ========================================================= */
+
+        .invoice-page {
+            width: 148mm;
+            height: 210mm;
+            min-height: 210mm;
+            margin: 0 auto;
+            padding: 7mm 8mm 5mm;
+            background: #fff;
+            overflow: hidden;
+        }
+
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        .shop-head {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            align-items: center;
+            width: 100%;
+            min-height: 57px;
+            margin-bottom: 0;
+            column-gap: 0;
+        }
+
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 200px;
+        }
+
+
+        /* =========================================================
+           PLACEHOLDER LOGO
+        ========================================================= */
+
+        .brand-logo {
+            width: 64px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            overflow: hidden;
+        }
+
+
+        .brand-logo img {
+            width: 130%;
+            height: 130%;
+            object-fit: contain;
+        }
+
+
+        .logo-placeholder {
+            width: 64px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: 700;
+            color: #777;
+            text-align: center;
+            line-height: 1.1;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+
+        .logo-placeholder img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+
+        .brand-name {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #666;
+            margin-top: 1px;
+        }
+
+
+        .shop-title-wrap {
+            text-align: center;
+            padding-right: 1mm;
+            align-self: stretch;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+
+        .shop-name {
+            margin: 0 0 3px;
+            font-size: 19px;
+            line-height: 1.15;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
+
+
+        .shop-meta {
+            font-size: 8px;
+            line-height: 1.48;
+            font-weight: 400;
+            color: #222;
+            text-align: center;
+        }
+
+
+        .shop-no {
+            font-weight: 500;
+        }
+
+
+        /* =========================================================
+           INVOICE TITLE
+        ========================================================= */
+
+        .invoice-heading {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 14px;
+            font-size: 16px;
+            line-height: 1;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+
+        /* =========================================================
+           BILL TO / INVOICE NUMBER
+        ========================================================= */
+
+        .meta {
+            display: grid;
+            grid-template-columns: 72% 28%;
+            width: 100%;
+            margin-bottom: 10px;
+            font-size: 9px;
+            line-height: 1.5;
+        }
+
+
+        .bill-to {
+            padding-left: 0;
+            font-size: 9px;
+            font-weight: 400;
+            text-align: left;
+        }
+
+
+        .bill-to .meta-label {
+            display: block;
+            margin-bottom: 2px;
+            font-weight: 700;
+            font-size: 10px;
+        }
+
+
+        .bill-to .customer-name {
+            display: block;
+            font-weight: 600;
+            padding-left: 0;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+
+        .invoice-no-wrap {
+            text-align: right;
+            padding-right: 0;
+            font-size: 9px;
+            line-height: 1.8;
+            font-weight: 400;
+        }
+
+
+        .invoice-no-wrap .meta-label {
+            font-weight: 700;
+
+        }
+
+
+        .number {
+            margin-left: 5px;
+            font-family:
+                "OCR A Extended",
+                "OCR A",
+                "Courier New",
+                monospace;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #111;
+        }
+
+
+        .invoice-date {
+            font-family:
+                "Arial";
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #111;
+        }
+
+
+        /* =========================================================
+           DESCRIPTION TABLE
+        ========================================================= */
+
+        .table-wrap {
+            width: 100%;
+            background: #fff;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin: 0;
+            font-size: 11px;
+            text-transform: uppercase;
+            border: none;
+        }
+
+
+        th,
+        td {
+            padding: 4px 6px;
+            height: 21px;
+            font-size: 11px;
+            text-transform: uppercase;
+            border: none;
+        }
+
+
+        thead th {
+            height: 25px;
+            background: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            vertical-align: middle;
+            letter-spacing: 0;
+            text-transform: uppercase;
+            border-bottom: 1px solid #333;
+            border-top: 1px solid #333;
+            border-left: 1px solid #333;
+            border-right: 1px solid #333;
+        }
+
+
+        th:first-child,
+        td:first-child {
+            width: 72%;
+            text-align: left;
+        }
+
+        thead th:first-child,
+        thead th:nth-child(2) {
+            text-align: center;
+        }
+
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 28%;
+            text-align: right;
+        }
+
+
+        tr.row-data td:first-child {
+            font-weight: 400;
+        }
+
+
+        tbody td:nth-child(2) {
+            text-align: right;
+            font-weight: 400;
+        }
+
+
+        /* =========================================================
+           KEEP TABLE TALL
+        ========================================================= */
+
+        .table-wrap table {
+            min-height: 82mm;
+        }
+
+
+        tbody tr.blank-row td {
+            height: 25px;
+        }
+
+
+        /* =========================================================
+           DISCOUNT / DEPOSIT / TOTAL
+        ========================================================= */
+
+        .total-panel {
+            width: 100%;
+            margin-top: 9px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+
+        .discount-top-line {
+            width: 100%;
+            border-top: 1px solid #333;
+            margin-bottom: 5px;
+        }
+
+
+        /*
+           Same 72% / 28% layout as the description table.
+           Left side = Description column.
+           Right side = Amount column.
+        */
+
+        .discount-row {
+            display: grid;
+            grid-template-columns: 72% 28%;
+            width: 100%;
+            padding: 3px 0;
+            font-size: 11px;
+            line-height: 1.3;
+            color: #333;
+        }
+
+
+        .discount-row .discount-label {
+            text-align: right;
+            padding-right: 6px;
+            font-weight: 400;
+            font-size: 11px;
+        }
+
+
+        .discount-row .discount-value {
+            text-align: right;
+            padding-right: 6px;
+            font-weight: 400;
+            font-size: 11px;
+        }
+
+
+        /* =========================================================
+           TOTAL BOX
+        ========================================================= */
+
+        .summary-total {
+            display: grid;
+            grid-template-columns: 72% 28%;
+            align-items: center;
+            width: 100%;
+            margin-top: 3px;
+            padding: 7px 0;
+            border: 1px solid #333;
+            background: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            box-sizing: border-box;
+        }
+
+
+        .summary-total .label {
+            text-align: right;
+            padding-right: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+
+        .summary-total .value {
+            text-align: right;
+            padding-right: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #111;
+        }
+
+
+        /* =========================================================
+           BANK / QR SECTION
+        ========================================================= */
+
+        .bank-section {
+            display: grid;
+            grid-template-columns: 58px 1fr 35px;
+            align-items: center;
+            column-gap: 8px;
+            width: 100%;
+            margin-top: 15px;
+            padding-top: 8px;
+            border-top: 1px solid #777;
+        }
+
+
+        .bank-qrcode {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #888;
+            background-image: url("{{ url_for('static', filename='qr.jpeg') }}");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+
+        .bank-details {
+            font-size: 8px;
+            line-height: 1.4;
+            color: #111;
+        }
+
+
+        .bank-details .maybank {
+            margin-bottom: 2px;
+            font-size: 11px;
+            line-height: 1.2;
+            font-weight: 800;
+        }
+
+
+        .bank-details .terms {
+            font-size: 7px;
+            line-height: 1.45;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+
+        .pay-later {
+            align-self: start;
+            padding-top: 1px;
+            text-align: right;
+            font-size: 8px;
+            font-weight: 700;
+        }
+
+
+        /* =========================================================
+           WHATSAPP
+        ========================================================= */
+
+        .whatsapp {
+            width: 100%;
+            margin-top: 9px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+
+        /* =========================================================
+           THANK YOU
+        ========================================================= */
+
+        .thanks {
+            width: 100%;
+            margin-top: 9px;
+            text-align: center;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+
+        /* =========================================================
+           BOTTOM SERIAL NUMBERS
+        ========================================================= */
+
+        .serials {
+            display: grid;
+            grid-template-columns: 45px 65px 1fr 105px;
+            align-items: center;
+            width: 100%;
+            margin-top: 35px;
+            padding-top: 5px;
+            border-top: 1px solid #aaa;
+            font-family:
+                "OCR A Extended",
+                "OCR A",
+                "Courier New",
+                monospace;
+            font-size: 7px;
+            line-height: 1;
+            color: #222;
+            letter-spacing: 0.5px;
+        }
+
+
+        .serials span:nth-child(1) {
+            text-align: left;
+        }
+
+
+        .serials span:nth-child(2) {
+            text-align: center;
+        }
+
+
+        .serials span:nth-child(3) {
+            text-align: center;
+        }
+
+
+        .serials span:nth-child(4) {
+            text-align: right;
+        }
+
+
+        /* =========================================================
+           SCREEN PRINT BUTTONS
+        ========================================================= */
+
+        .print-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 15px auto;
+        }
+
+
+        .print-actions button,
+        .print-actions a {
+            display: inline-block;
+            padding: 8px 14px;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            background: #fff;
+            color: #111;
+            text-decoration: none;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+
+        /* =========================================================
+           PRINT
+        ========================================================= */
+
+        @media print {
+
+            @page {
+                size: A5 portrait;
+                margin: 0;
+            }
+
+
+            html,
+            body {
+                width: 148mm;
+                min-height: 210mm;
+                height: auto;
+                margin: 0;
+                padding: 0;
+                background: #fff;
+            }
+
+
+            .invoice-page {
+                width: 148mm;
+                min-height: 210mm;
+                height: auto;
+                margin: 0;
+                padding: 7mm 8mm 5mm;
+                border: 0;
+                box-shadow: none;
+                page-break-after: avoid;
+                page-break-before: avoid;
+                page-break-inside: avoid;
+                overflow: visible;
+            }
+
+
+            .print-actions {
+                display: none !important;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<div class="invoice-page">
+
+
+    <!-- =========================================================
+         SHOP HEADER
+    ========================================================== -->
+
+    <header class="shop-head">
+
+
+        <div class="brand">
+  
+            <div class="brand-logo">
+
+                <div class="logo-placeholder">
+                <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="Logo">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="shop-title-wrap">
+
+
+            <div class="shop-name">
+                MIN BOOK CREATION
+            </div>
+
+
+            <div class="shop-meta">
+
+
+                <div class="shop-no">
+                    202503029939 (003694172-X)
+                </div>
+
+
+                <div>
+                    31-1, Jalan SP 2/2, Serdang Perdana, 43300 Seri Kembangan.
+                </div>
+
+
+                <div>
+                    Tel / Whatsapp: 010-229 5252   Email: minbookshop229@gmail.com
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </header>
+
+
+    <!-- =========================================================
+         INVOICE TITLE
+    ========================================================== -->
+
+    <div class="invoice-heading">
+        Invoice
+    </div>
+
+
+    <!-- =========================================================
+         CUSTOMER / INVOICE DETAILS
+    ========================================================== -->
+
+    <section class="meta">
+
+
+        <div class="bill-to">
+
+
+            <span class="meta-label">
+                BILL TO :
+            </span>
+
+
+            <span class="customer-name">
+
+                {% if sale.customer_name %}
+                    {{ sale.customer_name|upper }}
+                {% else %}
+                    CASH
+                {% endif %}
+
+            </span>
+
+
+        </div>
+
+
+        <div class="invoice-no-wrap">
+
+
+            <span class="meta-label">
+                NO. IV :
+            </span>
+
+
+            <span class="number">
+                {{ invoice_number }}
+            </span>
+
+
+            <br>
+
+
+            <span class="meta-label">
+                Date:
+            </span>
+
+
+            <span class="invoice-date">
+                {{ sale.date.strftime('%d.%m.%y') }}
+            </span>
+
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =========================================================
+         DESCRIPTION TABLE
+    ========================================================== -->
+
+    <section class="table-wrap">
+
+
+        <table>
+
+
+            <thead>
+
+
+                <tr>
+
+                    <th>
+                        DESCRIPTION
+                    </th>
+
+                    <th>
+                        AMOUNT (RM)
+                    </th>
+
+                </tr>
+
+
+            </thead>
+
+
+            <tbody>
+
+
+                {% for item in sale.items %}
+
+
+                <tr class="row-data">
+
+
+                    <td>
+
+                        {% if item.description %}
+                            {{ item.description }}{% if item.quantity %} - {{ item.quantity }}PC{% endif %}
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        {{ '{:.2f}'.format(item.line_total) }}
+                    </td>
+
+
+                </tr>
+
+
+                {% endfor %}
+
+
+                {% for blank in range(8 - sale.items|length if sale.items|length < 8 else 0) %}
+
+
+                <tr class="blank-row">
+
+
+                    <td>
+                        &nbsp;
+                    </td>
+
+
+                    <td>
+                        &nbsp;
+                    </td>
+
+
+                </tr>
+
+
+                {% endfor %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </section>
+
+
+    <!-- =========================================================
+         DISCOUNT / DEPOSIT / TOTAL
+    ========================================================== -->
+
+    <section class="total-panel">
+
+
+        <div class="discount-top-line"></div>
+
+
+        <div class="discount-row">
+
+
+            <span class="discount-label">
+                Discount :
+            </span>
+
+
+            <span class="discount-value">
+                {{ '{:.2f}'.format(sale.discount) }}
+            </span>
+
+
+        </div>
+
+
+        <div class="discount-row">
+
+
+            <span class="discount-label">
+                Deposit :
+            </span>
+
+
+            <span class="discount-value">
+                {{ '{:.2f}'.format(sale.deposit) }}
+            </span>
+
+
+        </div>
+
+
+        <div class="summary-total">
+
+
+            <span class="label">
+                TOTAL (RM)
+            </span>
+
+
+            <span class="value">
+                {{ '{:,.2f}'.format(sale.amount) }}
+            </span>
+
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =========================================================
+         BANK / QR / TERMS
+    ========================================================== -->
+
+    <section class="bank-section">
+
+
+        <div class="bank-qrcode">
+        </div>
+
+
+        <div class="bank-details">
+
+
+            <div class="maybank">
+                MAYBANK A/C NO: 5129 8715 4437
+            </div>
+
+
+            <div class="terms">
+
+                GOODS SOLD ARE NOT RETURNABLE &amp; REFUNDABLE.
+
+                <br>
+
+                DEPOSIT WILL BE FORFEITED AFTER 30 DAYS
+
+            </div>
+
+
+        </div>
+
+
+        <div class="pay-later">
+            E. &amp; O. E
+        </div>
+
+
+    </section>
+
+
+    <!-- =========================================================
+         WHATSAPP
+    ========================================================== -->
+
+    <div class="whatsapp">
+        WHATSAPP: 010 - 229 5252
+    </div>
+
+
+    <!-- =========================================================
+         THANK YOU
+    ========================================================== -->
+
+    <div class="thanks">
+        THANK YOU FOR YOUR SUPPORT !
+    </div>
+
+
+    <!-- =========================================================
+         BOTTOM SERIAL NUMBERS
+    ========================================================== -->
+
+    <section class="serials">
+
+
+        <span>
+            3321
+        </span>
+
+
+        <span>
+            8836623
+        </span>
+
+
+        <span>
+            86806868666756688329
+        </span>
+
+
+        <span>
+            22233332999 : 0999
+        </span>
+
+
+    </section>
+
+
+</div>
+
+
+<!-- =========================================================
+     ACTION BUTTONS
+========================================================== -->
+
+<div class="print-actions">
+
+
+    <button
+        type="button"
+        onclick="window.print()">
+        Print invoice
+    </button>
+
+
+    <a href="{{ url_for('main.edit_sale', sale_id=sale.id) }}">
+        Edit details
+    </a>
+
+
+    <a href="{{ url_for('main.view_sale', sale_id=sale.id) }}">
+        Back to sale
+    </a>
+
+
+</div>
+
+
+</body>
+</html>
+

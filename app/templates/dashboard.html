@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | MinBookShop{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+    <div><p class="text-uppercase text-muted small fw-bold mb-1">Overview</p><h1 class="mb-1">Good day, Minbook</h1></div>
+    <a href="{{ url_for('main.add_sale') }}" class="btn btn-warning btn-lg px-4">+ Start a new sale</a>
+</div>
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3"><div class="card h-100"><div class="card-body"><p class="text-muted mb-2">Today's sales</p><h2 class="mb-1">RM {{ '{:,.2f}'.format(total_sales_today) }}</h2><small class="text-success">Revenue collected</small></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="card h-100"><div class="card-body"><p class="text-muted mb-2">Transactions</p><h2 class="mb-1">{{ transaction_count_today }}</h2><small class="text-muted">Completed today</small></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="card h-100"><div class="card-body"><p class="text-muted mb-2">All receipts</p><h2 class="mb-1">{{ total_receipts }}</h2><small class="text-muted">Across the shop</small></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="card h-100"><div class="card-body"><p class="text-muted mb-2">Team members</p><h2 class="mb-1">{{ total_employees }}</h2><small class="text-muted">Active accounts</small></div></div></div>
+</div>
+<div class="row g-4">
+    <div class="col-lg-5"><div class="card h-100"><div class="card-header py-3"><h5 class="mb-0">Sales by category</h5></div><div class="card-body">
+        {% for category, amount in category_sales.items() %}<div class="d-flex justify-content-between align-items-center py-2 border-bottom"><span>{{ category }}</span><strong>RM {{ '{:,.2f}'.format(amount) }}</strong></div>{% endfor %}
+    </div></div></div>
+    <div class="col-lg-7"><div class="card h-100"><div class="card-header py-3 d-flex justify-content-between"><h5 class="mb-0">Recent transactions</h5><a href="{{ url_for('main.sales') }}" class="small text-decoration-none">View history</a></div><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Sale</th><th>Payment</th><th>Date</th><th class="text-end">Total</th></tr></thead><tbody>
+        {% for sale in recent_sales %}<tr><td><a class="text-decoration-none fw-semibold" href="{{ url_for('main.view_sale', sale_id=sale.id) }}">#{{ sale.id }}</a><br><small class="text-muted">{{ sale.items|length }} item{{ '' if sale.items|length == 1 else 's' }}</small></td><td>{{ sale.payment_method }}</td><td>{{ sale.date.strftime('%d %b %Y') }}</td><td class="text-end fw-semibold">RM {{ '{:,.2f}'.format(sale.amount) }}</td></tr>{% else %}<tr><td colspan="4" class="text-center text-muted py-5">No transactions yet.</td></tr>{% endfor %}
+    </tbody></table></div></div></div>
+</div>
+{% endblock %}
