@@ -814,7 +814,7 @@
                 <tr class="row-data">
 
 
-                    <td>{% if item.description %}{{ item.description }}{% if item.quantity %} - {{ item.quantity }}PC{% endif %}{% endif %}</td>
+                    <td>{% if item.description %}{% set parts = item.description.split('|||') %}{{ parts[0] }}{% if item.quantity %} - {{ item.quantity }} {% set unit = parts[1] if parts|length > 1 else 'PC' %}{% if item.quantity == 1 %}{{ unit }}{% elif unit == 'PC' %}PCS{% elif unit == 'BOX' %}BOXES{% elif unit == 'PACK' %}PACKS{% elif unit == 'SET' %}SETS{% elif unit == 'UNIT' %}UNITS{% endif %}{% endif %}{% endif %}</td>
 
 
 

@@ -95,6 +95,7 @@ def add_sale(document_type='receipt'):
         categories = request.form.getlist('category')
         descriptions = request.form.getlist('description')
         quantities = request.form.getlist('quantity')
+        units = request.form.getlist('unit')
         prices = request.form.getlist('unit_price')
         product_ids = request.form.getlist('product_id')
         service_types = request.form.getlist('service_type')
@@ -122,6 +123,7 @@ def add_sale(document_type='receipt'):
             }
             for index in range(max(len(descriptions), len(quantities), len(prices), len(product_ids), len(service_types))):
                 quantity = int(quantities[index]) if index < len(quantities) else 1
+                unit = units[index] if index < len(units) and units[index] in {'PC', 'BOX', 'PACK', 'SET', 'UNIT'} else 'PC'
                 unit_price = round(float(prices[index]), 2) if index < len(prices) and prices[index] else 0.00
                 service_type = service_types[index] if index < len(service_types) else 'custom'
                 description = descriptions[index].strip() if index < len(descriptions) else ''
@@ -157,7 +159,8 @@ def add_sale(document_type='receipt'):
                 if product and category == 'Stationery' and product.quantity < quantity:
                     flash(f'Not enough stock for {product.name}.', 'danger')
                     return redirect(url_for('main.add_sale', document_type=document_type))
-                items.append((category, description, quantity, unit_price, product))
+                display_description = f"{description}|||{unit}"
+                items.append((category, display_description, quantity, unit_price, product))
             if not items:
                 raise ValueError
         except (TypeError, ValueError, IndexError):
