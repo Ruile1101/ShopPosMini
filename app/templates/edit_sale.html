@@ -26,7 +26,7 @@
               <div class="col-md-2">
                 <label class="form-label small fw-semibold">Service type</label>
                 <select name="service_type" class="form-select service-type">
-                  <option value="custom" {% if item.description and item.description not in ['NORMAL STAMP','COLOP R24 BLUE INK','COLOP R24 BLACK INK','COLOP R30 BLUE INK','COLOP R30 BLACK INK','COLOP P40 BLUE INK','COLOP P40 BLACK INK'] %}selected{% endif %}>Custom type</option>
+                  <option value="custom" {% if item.description and item.description not in ['NORMAL STAMP ROUND 24MM','NORMAL STAMP ROUND 28MM''COLOP R24 BLUE INK','COLOP R24 BLACK INK','COLOP R30 BLUE INK','COLOP R30 BLACK INK','COLOP P40 BLUE INK','COLOP P40 BLACK INK', 'COMMON SEAL'] %}selected{% endif %}>Custom type</option>
                   {% for choice in invoice_service_choices %}
                     <option value="{{ choice.value }}" data-description="{{ choice.description }}" data-price="{{ '{:.2f}'.format(choice.price) }}" {% if item.description == choice.description or item.description == choice.label %}selected{% endif %}>{{ choice.label }}</option>
                   {% endfor %}

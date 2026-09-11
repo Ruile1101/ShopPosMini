@@ -80,13 +80,15 @@ def add_sale(document_type='receipt'):
     document_type = document_type.lower()
 
     invoice_service_choices = [
-        {'value': 'normal_stamp', 'label': 'NORMAL STAMP', 'description': 'NORMAL STAMP', 'price': 13.00},
-        {'value': 'color24_blue', 'label': 'COLOP R24 BLUE INK', 'description': 'COLOP R24 BLUE INK', 'price': 37.00},
-        {'value': 'color24_black', 'label': 'COLOP R24 BLACK INK', 'description': 'COLOP R24 BLACK INK', 'price': 37.00},
-        {'value': 'color30_blue', 'label': 'COLOP R30 BLUE INK', 'description': 'COLOP R30 BLUE INK', 'price': 45.00},
-        {'value': 'color30_black', 'label': 'COLOP R30 BLACK INK', 'description': 'COLOP R30 BLACK INK', 'price': 45.00},
-        {'value': 'p40_blue', 'label': 'COLOP P40 BLUE INK', 'description': 'COLOP P40 BLUE INK', 'price': 47.00},
-        {'value': 'p40_black', 'label': 'COLOP P40 BLACK INK', 'description': 'COLOP P40 BLACK INK', 'price': 47.00},
+        {'value': 'normal_stamp_24', 'label': 'Normal Stamp (Round 24mm)', 'description': 'NORMAL STAMP - ROUND 24MM', 'price': 13.00},
+        {'value': 'normal_stamp_28', 'label': 'Normal Stamp (Round 28mm)', 'description': 'NORMAL STAMP - ROUND 28MM', 'price': 14.00},
+        {'value': 'color24_blue', 'label': 'Colop R24 Blue Ink', 'description': 'COLOP R24 - BLUE INK', 'price': 37.00},
+        {'value': 'color24_black', 'label': 'Colop R24 Black Ink', 'description': 'COLOP R24 - BLACK INK', 'price': 37.00},
+        {'value': 'color30_blue', 'label': 'Colop R30 Blue Ink', 'description': 'COLOP R30 - BLUE INK', 'price': 45.00},
+        {'value': 'color30_black', 'label': 'Colop R30 Black Ink', 'description': 'COLOP R30 - BLACK INK', 'price': 45.00},
+        {'value': 'p40_blue', 'label': 'Colop P40 Blue Ink', 'description': 'COLOP P40 - BLUE INK', 'price': 47.00},
+        {'value': 'p40_black', 'label': 'Colop P40 Black Ink', 'description': 'COLOP P40 - BLACK INK', 'price': 47.00},
+        {'value': 'common_seal', 'label': 'Common Seal', 'description': 'COMMON SEAL', 'price': 120.00},
     ]
 
     if request.method == 'POST':
@@ -108,13 +110,15 @@ def add_sale(document_type='receipt'):
                 raise ValueError
             items = []
             fixed_prices = {
-                'normal_stamp': {'description': 'NORMAL STAMP', 'price': 13.00},
-                'color24_blue': {'description': 'COLOP R24 BLUE INK', 'price': 37.00},
-                'color24_black': {'description': 'COLOP R24 BLACK INK', 'price': 37.00},
-                'color30_blue': {'description': 'COLOP R30 BLUE INK', 'price': 45.00},
-                'color30_black': {'description': 'COLOP R30 BLACK INK', 'price': 45.00},
-                'p40_blue': {'description': 'COLOP P40 BLUE INK', 'price': 47.00},
-                'p40_black': {'description': 'COLOP P40 BLACK INK', 'price': 47.00},
+                'normal_stamp_24': {'description': 'NORMAL STAMP - ROUND 24MM', 'price': 13.00},
+                'normal_stamp_28': {'description': 'NORMAL STAMP - ROUND 28MM', 'price': 14.00},
+                'color24_blue': {'description': 'COLOP R24 - BLUE INK', 'price': 37.00},
+                'color24_black': {'description': 'COLOP R24 - BLACK INK', 'price': 37.00},
+                'color30_blue': {'description': 'COLOP R30 - BLUE INK', 'price': 45.00},
+                'color30_black': {'description': 'COLOP R30 - BLACK INK', 'price': 45.00},
+                'p40_blue': {'description': 'COLOP P40 - BLUE INK', 'price': 47.00},
+                'p40_black': {'description': 'COLOP P40 - BLACK INK', 'price': 47.00},
+                'common_seal': {'description': 'COMMON SEAL', 'price': 120.00},
             }
             for index in range(max(len(descriptions), len(quantities), len(prices), len(product_ids), len(service_types))):
                 quantity = int(quantities[index]) if index < len(quantities) else 1
@@ -208,13 +212,15 @@ def add_sale(document_type='receipt'):
 def edit_sale(sale_id):
     sale = Sale.query.get_or_404(sale_id)
     invoice_service_choices = [
-        {'value': 'normal_stamp', 'label': 'NORMAL STAMP', 'description': 'NORMAL STAMP', 'price': 13.00},
-        {'value': 'color24_blue', 'label': 'COLOP R24 BLUE INK', 'description': 'COLOP R24 BLUE INK', 'price': 37.00},
-        {'value': 'color24_black', 'label': 'COLOP R24 BLACK INK', 'description': 'COLOP R24 BLACK INK', 'price': 37.00},
-        {'value': 'color30_blue', 'label': 'COLOP R30 BLUE INK', 'description': 'COLOP R30 BLUE INK', 'price': 45.00},
-        {'value': 'color30_black', 'label': 'COLOP R30 BLACK INK', 'description': 'COLOP R30 BLACK INK', 'price': 45.00},
-        {'value': 'p40_blue', 'label': 'COLOP P40 BLUE INK', 'description': 'COLOP P40 BLUE INK', 'price': 47.00},
-        {'value': 'p40_black', 'label': 'COLOP P40 BLACK INK', 'description': 'COLOP P40 BLACK INK', 'price': 47.00},
+        {'value': 'normal_stamp_24', 'label': 'Normal Stamp (Round 24mm)', 'description': 'NORMAL STAMP - ROUND 24MM', 'price': 13.00},
+        {'value': 'normal_stamp_28', 'label': 'Normal Stamp (Round 28mm)', 'description': 'NORMAL STAMP - ROUND 28MM', 'price': 14.00},
+        {'value': 'color24_blue', 'label': 'Colop R24 Blue Ink', 'description': 'COLOP R24 - BLUE INK', 'price': 37.00},
+        {'value': 'color24_black', 'label': 'Colop R24 Black Ink', 'description': 'COLOP R24 - BLACK INK', 'price': 37.00},
+        {'value': 'color30_blue', 'label': 'Colop R30 Blue Ink', 'description': 'COLOP R30 - BLUE INK', 'price': 45.00},
+        {'value': 'color30_black', 'label': 'Colop R30 Black Ink', 'description': 'COLOP R30 - BLACK INK', 'price': 45.00},
+        {'value': 'p40_blue', 'label': 'Colop P40 Blue Ink', 'description': 'COLOP P40 - BLUE INK', 'price': 47.00},
+        {'value': 'p40_black', 'label': 'Colop P40 Black Ink', 'description': 'COLOP P40 - BLACK INK', 'price': 47.00},
+        {'value': 'common_seal', 'label': 'Common Seal', 'description': 'COMMON SEAL', 'price': 120.00},
     ]
 
     if request.method == 'POST':
