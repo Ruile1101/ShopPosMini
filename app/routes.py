@@ -70,7 +70,7 @@ def sales():
     return render_template('sales.html', sales=sales_query.all(), categories=SALE_CATEGORIES,
                            payment_methods=PAYMENT_METHODS, selected_document_type=filter_document_type)
 
-@main.route('/add_sale', defaults={'document_type': 'receipt'}, methods=['GET', 'POST'])
+@main.route('/add_sale', defaults={'document_type': 'invoice'}, methods=['GET', 'POST'])
 @main.route('/add_sale/<document_type>', methods=['GET', 'POST'])
 def add_sale(document_type='receipt'):
     if document_type.lower() not in {'receipt', 'invoice'}:
