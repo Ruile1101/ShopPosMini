@@ -38,7 +38,7 @@ class SaleItem(db.Model):
     sale_id = db.Column(db.Integer, db.ForeignKey('sale.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=True)
     category = db.Column(db.String(30), nullable=False)
-    description = db.Column(db.String(255), nullable=True)
+    description = db.Column(db.Text, nullable=True)
     quantity = db.Column(db.Integer, nullable=False)
     unit_price = db.Column(db.Float, nullable=False)
     line_total = db.Column(db.Float, nullable=False)

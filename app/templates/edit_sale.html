@@ -34,7 +34,7 @@
               </div>
               <div class="col-md-3">
                 <label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label>
-                <input name="description" class="form-control description" value="{{ item.description or '' }}" placeholder="Custom service type">
+                <textarea name="description" class="form-control description" rows="3" placeholder="Custom service type">{{ item.description or '' }}</textarea>
               </div>
               {% else %}
               <div class="col-md-2">
@@ -56,7 +56,7 @@
               </div>
               <div class="col-md-3">
                 <label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label>
-                <input name="description" class="form-control description" value="{{ item.description or '' }}" placeholder="e.g. A4 colour copy">
+                <textarea name="description" class="form-control description" rows="3" placeholder="e.g. A4 colour copy">{{ item.description or '' }}</textarea>
               </div>
               {% endif %}
 
@@ -137,7 +137,7 @@
       </div>
       <div class="col-md-3">
         <label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label>
-        <input name="description" class="form-control description" placeholder="Custom service type">
+        <textarea name="description" class="form-control description" rows="3" placeholder="Custom service type"></textarea>
       </div>
       {% else %}
       <div class="col-md-2">
@@ -155,7 +155,7 @@
       </div>
       <div class="col-md-3">
         <label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label>
-        <input name="description" class="form-control description" placeholder="e.g. A4 colour copy">
+        <textarea name="description" class="form-control description" rows="3" placeholder="e.g. A4 colour copy"></textarea>
       </div>
       {% endif %}
       <div class="col-md-1"><label class="form-label small fw-semibold">Qty</label><input name="quantity" type="number" min="1" value="1" class="form-control quantity" required></div>
@@ -186,7 +186,7 @@ function toggleProduct(item) {
   if (!isStationery) product.value = '';
 }
 function bindItem(item) {
-  item.querySelectorAll('input, select').forEach(control => control.addEventListener('input', () => updateItem(item)));
+  item.querySelectorAll('input, select, textarea').forEach(control => control.addEventListener('input', () => updateItem(item)));
   const categorySelect = item.querySelector('.category');
   if (categorySelect) {
     categorySelect.addEventListener('change', () => { toggleProduct(item); updateItem(item); });

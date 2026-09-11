@@ -17,11 +17,11 @@
 <div class="sale-item border rounded-3 p-3 mb-3"><div class="row g-2 align-items-end">
 {% if document_type == 'invoice' %}
 <div class="col-md-2"><label class="form-label small fw-semibold">Service type</label><select name="service_type" class="form-select service-type"><option value="custom">Custom type</option>{% for choice in invoice_service_choices %}<option value="{{ choice.value }}" data-description="{{ choice.description }}" data-price="{{ '{:.2f}'.format(choice.price) }}">{{ choice.label }}</option>{% endfor %}</select></div>
-<div class="col-md-3"><label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label><input name="description" class="form-control description" placeholder="Custom service type"></div>
+<div class="col-md-3"><label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label><textarea name="description" class="form-control description" rows="3" placeholder="Custom service type"></textarea></div>
 {% else %}
 <div class="col-md-2"><label class="form-label small fw-semibold">Category</label><select name="category" class="form-select category" required>{% for category in categories %}<option>{{ category }}</option>{% endfor %}</select></div>
 <div class="col-md-2 stationery-product d-none"><label class="form-label small fw-semibold">Stationery product</label><select name="product_id" class="form-select product"><option value="">Choose product</option>{% for product in products %}<option value="{{ product.id }}" data-price="{{ product.price }}">{{ product.name }} (RM {{ '{:.2f}'.format(product.price) }})</option>{% endfor %}</select></div>
-<div class="col-md-3"><label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label><input name="description" class="form-control description" placeholder="e.g. A4 colour copy"></div>
+<div class="col-md-3"><label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label><textarea name="description" class="form-control description" rows="3" placeholder="e.g. A4 colour copy"></textarea></div>
 {% endif %}
 <div class="col-md-1"><label class="form-label small fw-semibold">Qty</label><input name="quantity" type="number" min="1" value="1" class="form-control quantity" required></div>
 <div class="col-md-2"><label class="form-label small fw-semibold">Unit price (RM)</label><input name="unit_price" type="number" min="0" step="0.01" value="0.00" class="form-control unit-price" required></div>
@@ -32,11 +32,11 @@
 <template id="item-template"><div class="sale-item border rounded-3 p-3 mb-3"><div class="row g-2 align-items-end">
 {% if document_type == 'invoice' %}
 <div class="col-md-2"><label class="form-label small fw-semibold">Service type</label><select name="service_type" class="form-select service-type"><option value="custom">Custom type</option>{% for choice in invoice_service_choices %}<option value="{{ choice.value }}" data-description="{{ choice.description }}" data-price="{{ '{:.2f}'.format(choice.price) }}">{{ choice.label }}</option>{% endfor %}</select></div>
-<div class="col-md-3"><label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label><input name="description" class="form-control description" placeholder="Custom service type"></div>
+<div class="col-md-3"><label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label><textarea name="description" class="form-control description" rows="3" placeholder="Custom service type"></textarea></div>
 {% else %}
 <div class="col-md-2"><label class="form-label small fw-semibold">Category</label><select name="category" class="form-select category" required>{% for category in categories %}<option>{{ category }}</option>{% endfor %}</select></div>
 <div class="col-md-2 stationery-product d-none"><label class="form-label small fw-semibold">Stationery product</label><select name="product_id" class="form-select product"><option value="">Choose product</option>{% for product in products %}<option value="{{ product.id }}" data-price="{{ product.price }}">{{ product.name }} (RM {{ '{:.2f}'.format(product.price) }})</option>{% endfor %}</select></div>
-<div class="col-md-3"><label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label><input name="description" class="form-control description" placeholder="e.g. A4 colour copy"></div>
+<div class="col-md-3"><label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label><textarea name="description" class="form-control description" rows="3" placeholder="e.g. A4 colour copy"></textarea></div>
 {% endif %}
 <div class="col-md-1"><label class="form-label small fw-semibold">Qty</label><input name="quantity" type="number" min="1" value="1" class="form-control quantity" required></div>
 <div class="col-md-2"><label class="form-label small fw-semibold">Unit price (RM)</label><input name="unit_price" type="number" min="0" step="0.01" value="0.00" class="form-control unit-price" required></div>
@@ -55,7 +55,7 @@ function toggleProduct(item) {
     if (!isStationery) product.value = '';
 }
 function bindItem(item) {
-    item.querySelectorAll('input, select').forEach(control => control.addEventListener('input', () => updateItem(item)));
+    item.querySelectorAll('input, select, textarea').forEach(control => control.addEventListener('input', () => updateItem(item)));
     const categorySelect = item.querySelector('.category');
     if (categorySelect) {
         categorySelect.addEventListener('change', () => { toggleProduct(item); updateItem(item); });

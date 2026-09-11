@@ -12,5 +12,4 @@ error_log.txt
 # The local SQLite database remains on the developer machine. Vercel uses the
 # DATABASE_URL environment variable for a persistent shared database instead.
 pos.db
-static/
 app/__init__.py.fixed

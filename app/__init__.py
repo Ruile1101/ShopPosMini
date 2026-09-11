@@ -66,6 +66,17 @@ def create_app():
                     elif dialect == 'postgresql':
                         db.session.execute(text("ALTER TABLE sale ADD COLUMN IF NOT EXISTS deposit FLOAT NOT NULL DEFAULT 0.00"))
 
+                # A sale-item description is entered through a textarea and may
+                # contain multiple lines.  PostgreSQL enforces VARCHAR(255), so
+                # widen databases created by older versions of the app.
+                if dialect == 'postgresql' and 'sale_item' in inspector.get_table_names():
+                    description_column = next(
+                        (column for column in inspector.get_columns('sale_item') if column['name'] == 'description'),
+                        None,
+                    )
+                    if description_column and getattr(description_column['type'], 'length', None):
+                        db.session.execute(text("ALTER TABLE sale_item ALTER COLUMN description TYPE TEXT"))
+
                 db.session.commit()
             except Exception:
                 # Keep the app booting for environments where the sales table is not yet present.
