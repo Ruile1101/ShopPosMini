@@ -1522,3 +1522,81 @@ create_app() completed successfully
 
 ============================================================
 Starting Flask server...
+
+============================================================
+Starting ShopPOS...
+
+============================================================
+Imported create_app successfully
+
+============================================================
+Traceback (most recent call last):
+  File "C:\project\python-offline-pos-main\start.py", line 30, in <module>
+    app = create_app()
+          ^^^^^^^^^^^^
+  File "C:\project\python-offline-pos-main\app\__init__.py", line 85, in create_app
+    from app.routes import main
+  File "C:\project\python-offline-pos-main\app\routes.py", line 176
+    if cashier is None:
+IndentationError: unexpected indent
+
+
+============================================================
+Starting ShopPOS...
+
+============================================================
+Imported create_app successfully
+
+============================================================
+create_app() completed successfully
+
+============================================================
+Starting Flask server...
+
+============================================================
+Starting ShopPOS...
+
+============================================================
+Imported create_app successfully
+
+============================================================
+create_app() completed successfully
+
+============================================================
+Starting Flask server...
+
+============================================================
+Starting ShopPOS...
+
+============================================================
+Imported create_app successfully
+
+============================================================
+create_app() completed successfully
+
+============================================================
+Starting Flask server...
+
+============================================================
+Starting ShopPOS...
+
+============================================================
+Imported create_app successfully
+
+============================================================
+create_app() completed successfully
+
+============================================================
+Starting Flask server...
+
+============================================================
+Starting ShopPOS...
+
+============================================================
+Imported create_app successfully
+
+============================================================
+create_app() completed successfully
+
+============================================================
+Starting Flask server...

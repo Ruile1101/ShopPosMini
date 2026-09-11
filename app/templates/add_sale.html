@@ -43,8 +43,7 @@
 </div><div class="d-flex justify-content-between mt-3"><small class="text-muted">Line total</small><strong class="line-total">RM 0.00</strong><button type="button" class="btn btn-link btn-sm text-danger remove-item">Remove</button></div></div></template>
 <script>
 const items = document.getElementById('items');
-function updateItem(item) { const qty = Number(item.querySelector('.quantity').value || 0); const price = Number(item.querySelector('.unit-price').value || 0); item.querySelector('.line-total').textContent = `RM ${(qty * price).toFixed(2)}`; document.getElementById('grand-total').textContent = `RM ${[...document.querySelectorAll('.sale-item')].reduce((sum, row) => sum + Number(row.querySelector('.quantity').value || 0) * Number(row.querySelector('.unit-price').value || 0), 0).toFixed(2)}`; }
-function toggleProduct(item) {
+function updateItem(item) { item.querySelector('.line-total').textContent = `RM ${(Number(item.querySelector('.quantity').value || 0) * Number(item.querySelector('.unit-price').value || 0)).toFixed(2)}`; document.getElementById('grand-total').textContent = `RM ${Math.max(0, [...document.querySelectorAll('.sale-item')].reduce((s, r) => s + (Number(r.querySelector('.quantity').value || 0) * Number(r.querySelector('.unit-price').value || 0)), 0) - Number(document.querySelector('input[name="discount"]')?.value || 0)).toFixed(2)}`; }function toggleProduct(item) {
     const category = item.querySelector('.category');
     const productWrap = item.querySelector('.stationery-product');
     const product = item.querySelector('.product');
@@ -83,6 +82,6 @@ function bindItem(item) {
     item.querySelector('.remove-item').addEventListener('click', () => { if (document.querySelectorAll('.sale-item').length > 1) { item.remove(); updateItem(document.querySelector('.sale-item')); } });
     toggleProduct(item); updateItem(item);
 }
-bindItem(document.querySelector('.sale-item')); document.getElementById('add-item').addEventListener('click', () => { const item = document.getElementById('item-template').content.cloneNode(true).firstElementChild; items.appendChild(item); bindItem(item); });
+bindItem(document.querySelector('.sale-item')); document.querySelector('input[name="discount"]')?.addEventListener('input', () => updateItem(document.querySelector('.sale-item'))); document.getElementById('add-item').addEventListener('click', () => { const item = document.getElementById('item-template').content.cloneNode(true).firstElementChild; items.appendChild(item); bindItem(item); updateItem(item); });
 </script>
 {% endblock %}
