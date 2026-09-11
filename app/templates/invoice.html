@@ -328,6 +328,9 @@
         /* Keep an item's description and amount aligned to the same top edge. */
         tbody tr.row-data td {
             vertical-align: top;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            line-height: 1.3;
         }
 
 
@@ -811,18 +814,11 @@
                 <tr class="row-data">
 
 
-                    <td>
-
-                        {% if item.description %}
-                            {{ item.description }}{% if item.quantity %} - {{ item.quantity }}PC{% endif %}
-                        {% endif %}
-
-                    </td>
+                    <td>{% if item.description %}{{ item.description }}{% if item.quantity %} - {{ item.quantity }}PC{% endif %}{% endif %}</td>
 
 
-                    <td>
-                        {{ '{:.2f}'.format(item.line_total) }}
-                    </td>
+
+                    <td>{{ '{:.2f}'.format(item.line_total) }}</td>
 
 
                 </tr>
