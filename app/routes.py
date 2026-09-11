@@ -128,7 +128,7 @@ def add_sale(document_type='receipt'):
                         if not description:
                             raise ValueError
                     elif service_type in fixed_prices:
-                        description = fixed_prices[service_type]['description']
+                        description = description or fixed_prices[service_type]['description']
                         unit_price = fixed_prices[service_type]['price']
                     else:
                         description = description or 'Invoice service item'
@@ -139,7 +139,7 @@ def add_sale(document_type='receipt'):
                     if service_type == 'custom':
                         description = description or 'Service item'
                     elif service_type in fixed_prices:
-                        description = fixed_prices[service_type]['description']
+                        description = description or fixed_prices[service_type]['description']
                         unit_price = fixed_prices[service_type]['price']
                     else:
                         description = description or 'Service item'
@@ -159,9 +159,17 @@ def add_sale(document_type='receipt'):
         except (TypeError, ValueError, IndexError):
             flash('Add at least one valid sale item and check the entered values.', 'danger')
             return redirect(url_for('main.add_sale', document_type=document_type))
-        amount = round(sum(quantity * unit_price for _, _, quantity, unit_price, _ in items), 2)
-        first_product = next((product for _, _, _, _, product in items if product), None)
+        subtotal = round(
+            sum(quantity * unit_price for _, _, quantity, unit_price, _ in items),
+            2
+        )
 
+        discount = max(0, float(discount or 0))
+
+        if discount > subtotal:
+            discount = subtotal
+
+        subtotal = round(sum(q * p for _, _, q, p, _ in items), 2); amount = round(subtotal - min(subtotal, max(0, float(discount or 0))), 2); first_product = next((p for _, _, _, _, p in items if p), None)
         cashier = User.query.order_by(User.id.asc()).first()
         if cashier is None:
             cashier = User(username='admin', email='admin@shop.local', password='password')
@@ -250,7 +258,18 @@ def edit_sale(sale_id):
                 product_id = int(product_ids[0]) if product_ids and product_ids[0] else None
                 item.product_id = product_id
                 item.product = Product.query.get(product_id) if product_id else None
-                sale.amount = round(sum(i.quantity * i.unit_price for i in sale.items), 2)
+                subtotal = round(
+                sum(i.quantity * i.unit_price for i in sale.items),
+                2
+                )
+
+                discount = max(0, float(sale.discount or 0))
+
+                if discount > subtotal:
+                    discount = subtotal
+
+                sale.discount = round(discount, 2)
+                sale.amount = round(subtotal - sale.discount, 2)
                 sale.quantity = sum(i.quantity for i in sale.items)
                 sale.product_id = item.product_id
             else:
@@ -266,12 +285,7 @@ def edit_sale(sale_id):
                     item.product_id = product_id
                     item.product = Product.query.get(product_id) if product_id else None
 
-                sale.amount = round(sum(i.quantity * i.unit_price for i in sale.items), 2)
-                sale.quantity = sum(i.quantity for i in sale.items)
-                first_product = next((i.product for i in sale.items if i.product), None)
-                sale.product_id = first_product.id if first_product else None
-
-            db.session.commit()
+                subtotal = round(sum((i.quantity or 0) * (i.unit_price or 0) for i in (sale.items or [])), 2); sale.discount = round(min(subtotal, max(0, float(sale.discount or 0))), 2); sale.amount = round(subtotal - sale.discount, 2); sale.quantity = sum((i.quantity or 0) for i in (sale.items or [])); db.session.commit()
             flash('Sale updated successfully!', 'success')
             if sale.document_type == 'invoice':
                 return redirect(url_for('main.invoice', sale_id=sale.id))
