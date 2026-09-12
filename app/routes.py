@@ -295,6 +295,7 @@ def edit_sale(sale_id):
                     item.product = Product.query.get(product_id) if product_id else None
 
                 subtotal = round(sum((i.quantity or 0) * (i.unit_price or 0) for i in (sale.items or [])), 2); sale.discount = round(min(subtotal, max(0, float(sale.discount or 0))), 2); sale.amount = round(subtotal - sale.discount, 2); sale.quantity = sum((i.quantity or 0) for i in (sale.items or [])); db.session.commit()
+            db.session.commit();
             flash('Sale updated successfully!', 'success')
             if sale.document_type == 'invoice':
                 return redirect(url_for('main.invoice', sale_id=sale.id))

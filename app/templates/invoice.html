@@ -603,44 +603,42 @@
            PRINT
         ========================================================= */
 
-        @media print {
-
-            @page {
-                size: A5 portrait;
+    @media print {
+        @page {
+        size: 148mm 210mm;
                 margin: 0;
             }
 
-
-            html,
-            body {
-                width: 148mm;
-                min-height: 210mm;
-                height: auto;
-                margin: 0;
-                padding: 0;
-                background: #fff;
-            }
-
-
-            .invoice-page {
-                width: 148mm;
-                min-height: 210mm;
-                height: auto;
-                margin: 0;
-                padding: 7mm 8mm 5mm;
-                border: 0;
-                box-shadow: none;
-                page-break-after: avoid;
-                page-break-before: avoid;
-                page-break-inside: avoid;
-                overflow: visible;
-            }
-
-
-            .print-actions {
-                display: none !important;
-            }
+    html,
+    body {
+        width: 148mm !important;
+        height: 210mm !important;
+        min-height: 210mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
         }
+
+    .invoice-page {
+        width: 148mm !important;
+        height: 210mm !important;
+        min-height: 210mm !important;
+        max-height: 210mm !important;
+        margin: 0 !important;
+        padding: 7mm 8mm 5mm;
+        border: 0;
+        box-shadow: none;
+        page-break-after: avoid;
+        page-break-before: avoid;
+        page-break-inside: avoid;
+        overflow: visible;
+    }
+
+    .print-actions {
+        display: none !important;
+    }
+}
+
 
     </style>
 </head>
