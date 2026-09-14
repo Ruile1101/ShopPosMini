@@ -67,8 +67,10 @@ def sales():
         sales_query = sales_query.filter(Sale.items.any(SaleItem.category == filter_category))
     if filter_payment in PAYMENT_METHODS:
         sales_query = sales_query.filter(Sale.payment_method == filter_payment)
-    return render_template('sales.html', sales=sales_query.all(), categories=SALE_CATEGORIES,
-                           payment_methods=PAYMENT_METHODS, selected_document_type=filter_document_type)
+    sales_list = sales_query.all()
+    document_numbers= {sale.id: month_document_number(sale, sale.document_type) for sale in sales_list}
+    return render_template('sales.html', sales=sales_list, categories=SALE_CATEGORIES,
+                           payment_methods=PAYMENT_METHODS, selected_document_type=filter_document_type, document_numbers=document_numbers)
 
 @main.route('/add_sale', defaults={'document_type': 'invoice'}, methods=['GET', 'POST'])
 @main.route('/add_sale/<document_type>', methods=['GET', 'POST'])

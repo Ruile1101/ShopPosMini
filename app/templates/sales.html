@@ -83,11 +83,7 @@
                 {% for sale in sales %}
 <tr>
     <td class="fw-semibold">
-        {% if sale.document_type == 'invoice' %}
-            INV-{{ '%05d'|format(sale.id) }}
-        {% else %}
-            RCP-{{ '%05d'|format(sale.id) }}
-        {% endif %}
+        {{ document_numbers[sale.id] }}
     </td>
 
     <td>
