@@ -3,6 +3,7 @@ from io import BytesIO
 from flask import Blueprint, render_template, redirect, url_for, flash, request, send_file
 from datetime import date, datetime, timedelta
 from app import db
+from sqlalchemy.orm import joinedload
 from app.models import PAYMENT_METHODS, SALE_CATEGORIES, User, Sale, SaleItem, Stock, Product
 import calendar
 from reportlab.lib import colors
@@ -52,25 +53,62 @@ def dashboard():
 
 @main.route('/sales', methods=['GET', 'POST'])
 def sales():
-    sales_query = Sale.query.order_by(Sale.id.desc())
+    sales_query = Sale.query.options(
+        joinedload(Sale.items)
+    ).order_by(Sale.id.desc())
+
     filter_date = request.args.get('filter_date', '')
     filter_category = request.args.get('category', '')
     filter_payment = request.args.get('payment_method', '')
     filter_document_type = (request.args.get('document_type', '') or '').lower().strip()
 
     if filter_document_type in {'receipt', 'invoice'}:
-        sales_query = sales_query.filter(Sale.document_type == filter_document_type)
+        sales_query = sales_query.filter(
+            Sale.document_type == filter_document_type
+        )
 
     if filter_date:
-        sales_query = sales_query.filter(Sale.date == filter_date)
+        sales_query = sales_query.filter(
+            Sale.date == filter_date
+        )
+
     if filter_category in SALE_CATEGORIES:
-        sales_query = sales_query.filter(Sale.items.any(SaleItem.category == filter_category))
+        sales_query = sales_query.filter(
+            Sale.items.any(SaleItem.category == filter_category)
+        )
+
     if filter_payment in PAYMENT_METHODS:
-        sales_query = sales_query.filter(Sale.payment_method == filter_payment)
-    sales_list = sales_query.all()
-    document_numbers= {sale.id: month_document_number(sale, sale.document_type) for sale in sales_list}
-    return render_template('sales.html', sales=sales_list, categories=SALE_CATEGORIES,
-                           payment_methods=PAYMENT_METHODS, selected_document_type=filter_document_type, document_numbers=document_numbers)
+        sales_query = sales_query.filter(
+            Sale.payment_method == filter_payment
+        )
+
+    page = request.args.get('page', 1, type=int)
+
+    sales_pagination = sales_query.paginate(
+        page=page,
+        per_page=30,
+        error_out=False
+    )
+
+    sales_list = sales_pagination.items
+
+    document_numbers = {
+        sale.id: month_document_number(
+            sale,
+            sale.document_type
+        )
+        for sale in sales_list
+    }
+
+    return render_template(
+        'sales.html',
+        sales=sales_list,
+        pagination=sales_pagination,
+        categories=SALE_CATEGORIES,
+        payment_methods=PAYMENT_METHODS,
+        selected_document_type=filter_document_type,
+        document_numbers=document_numbers
+    )
 
 @main.route('/add_sale', defaults={'document_type': 'invoice'}, methods=['GET', 'POST'])
 @main.route('/add_sale/<document_type>', methods=['GET', 'POST'])

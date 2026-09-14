@@ -3,134 +3,323 @@
 {% block title %}Sales History | MinBookShop{% endblock %}
 
 {% block content %}
-<!-- Header Section -->
+
 <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
-    <div>
-        <p class="text-uppercase text-muted small fw-bold mb-1">Transactions</p>
-        <h1 class="mb-1">Sales history</h1>
-        <p class="text-muted mb-0">Search and review every completed sale.</p>
-    </div>
-    <a href="{{ url_for('main.add_sale') }}" class="btn btn-warning btn-lg">+ New sale</a>
+
+<div>
+    <p class="text-uppercase text-muted small fw-bold mb-1">Transactions</p>
+    <h1 class="mb-1">Sales history</h1>
+    <p class="text-muted mb-0">Search and review every completed sale.</p>
 </div>
 
-<!-- Filters Card -->
+<a href="{{ url_for('main.add_sale') }}" class="btn btn-warning btn-lg">+ New sale</a>
+</div>
+
 <div class="card mb-4">
-    <div class="card-body">
-        <form method="GET" class="row g-2 align-items-end">
-            <!-- Date Filter -->
-            <div class="col-md-2">
-                <label class="form-label small fw-semibold">Date</label>
-                <input type="date" name="filter_date" value="{{ request.args.get('filter_date', '') }}" class="form-control">
-            </div>
-            
-            <!-- Document Type Filter -->
-            <div class="col-md-2">
-                <label class="form-label small fw-semibold">Document</label>
-                <select name="document_type" class="form-select">
-                    <option value="">All</option>
-                    <option value="receipt" {% if request.args.get('document_type') == 'receipt' %}selected{% endif %}>Receipt</option>
-                    <option value="invoice" {% if request.args.get('document_type') == 'invoice' %}selected{% endif %}>Invoice</option>
-                </select>
-            </div>
-            
-            <!-- Category Filter -->
-            <div class="col-md-3">
-                <label class="form-label small fw-semibold">Category</label>
-                <select name="category" class="form-select">
-                    <option value="">All categories</option>
-                    {% for category in categories %}
-                    <option value="{{ category }}" {% if request.args.get('category') == category %}selected{% endif %}>{{ category }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Payment Method Filter -->
-            <div class="col-md-3">
-                <label class="form-label small fw-semibold">Payment</label>
-                <select name="payment_method" class="form-select">
-                    <option value="">All payments</option>
-                    {% for method in payment_methods %}
-                    <option value="{{ method }}" {% if request.args.get('payment_method') == method %}selected{% endif %}>{{ method }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Form Action Buttons -->
-            <div class="col-md-2 d-flex gap-2">
-                <button class="btn btn-primary flex-grow-1">Apply filters</button>
-                <a href="{{ url_for('main.sales') }}" class="btn btn-outline-secondary">Clear</a>
-            </div>
-        </form>
-    </div>
+
+<div class="card-body">
+
+    <form method="GET" class="row g-2 align-items-end">
+
+        <div class="col-md-2">
+
+            <label class="form-label small fw-semibold">Date</label>
+
+            <input
+                type="date"
+                name="filter_date"
+                value="{{ request.args.get('filter_date', '') }}"
+                class="form-control"
+            >
+
+        </div>
+
+        <!-- Document Type Filter -->
+
+        <div class="col-md-2">
+
+            <label class="form-label small fw-semibold">Document</label>
+
+            <select name="document_type" class="form-select">
+
+                <option value="">All</option>
+
+                <option
+                    value="receipt"
+                    {% if request.args.get('document_type') == 'receipt' %}selected{% endif %}
+                >
+                    Receipt
+                </option>
+
+                <option
+                    value="invoice"
+                    {% if request.args.get('document_type') == 'invoice' %}selected{% endif %}
+                >
+                    Invoice
+                </option>
+
+            </select>
+
+        </div>
+
+        <!-- Category Filter -->
+
+        <div class="col-md-3">
+
+            <label class="form-label small fw-semibold">Category</label>
+
+            <select name="category" class="form-select">
+
+                <option value="">All categories</option>
+
+                {% for category in categories %}
+
+                <option
+                    value="{{ category }}"
+                    {% if request.args.get('category') == category %}selected{% endif %}
+                >
+                    {{ category }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <!-- Payment Method Filter -->
+
+        <div class="col-md-3">
+
+            <label class="form-label small fw-semibold">Payment</label>
+
+            <select name="payment_method" class="form-select">
+
+                <option value="">All payments</option>
+
+                {% for method in payment_methods %}
+
+                <option
+                    value="{{ method }}"
+                    {% if request.args.get('payment_method') == method %}selected{% endif %}
+                >
+                    {{ method }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <!-- Form Action Buttons -->
+
+        <div class="col-md-2 d-flex gap-2">
+
+            <button class="btn btn-primary flex-grow-1">
+                Apply filters
+            </button>
+
+            <a
+                href="{{ url_for('main.sales') }}"
+                class="btn btn-outline-secondary"
+            >
+                Clear
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
 </div>
 
 <!-- Sales Table Card -->
+
 <div class="card">
-    <div class="table-responsive">
-        <table class="table mb-0">
-            <thead>
-                <tr>
-                    <th>Document No.</th>
-                    <th>Customer</th>
-                    <th>Items</th>
-                    <th>Date</th>
-                    <th>Total</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for sale in sales %}
-                {% for sale in sales %}
-<tr>
-    <td class="fw-semibold">
-        {{ document_numbers[sale.id] }}
-    </td>
 
-    <td>
-        {{ sale.customer_name or 'Walk-in Customer' }}
-    </td>
+<div class="table-responsive">
 
-    <td>
-        {{ sale.items|length }} item{{ '' if sale.items|length == 1 else 's' }}
-    </td>
+    <table class="table mb-0">
 
-    <td>
-        {{ sale.date.strftime('%d %b %Y') }}
-    </td>
+        <thead>
 
-    <td class="text-end fw-semibold">
-        RM {{ '{:,.2f}'.format(sale.amount) }}
-    </td>
+            <tr>
 
-    <td class="text-end">
-        {% if sale.document_type == 'invoice' %}
-            <a href="{{ url_for('main.invoice', sale_id=sale.id) }}"
-               class="btn btn-sm btn-outline-primary"
-               target="_blank">Invoice</a>
-        {% else %}
-            <a href="{{ url_for('main.receipt', sale_id=sale.id) }}"
-               class="btn btn-sm btn-outline-success"
-               target="_blank">Receipt</a>
-        {% endif %}
+                <th>Document No.</th>
 
-        <a href="{{ url_for('main.view_sale', sale_id=sale.id) }}"
-           class="btn btn-sm btn-outline-primary">Details</a>
-    </td>
-</tr>
-{% else %}
-<tr>
-    <td colspan="6" class="text-center text-muted py-5">
-        No sales match these filters.
-    </td>
-</tr>
-{% endfor %}
-                {% else %}
-                <tr>
-                    <td colspan="7" class="text-center text-muted py-5">No sales match these filters.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                <th>Customer</th>
+
+                <th>Items</th>
+
+                <th>Date</th>
+
+                <th>Total</th>
+
+                <th></th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for sale in sales %}
+
+            <tr>
+
+                <td class="fw-semibold">
+
+                    {{ document_numbers[sale.id] }}
+
+                </td>
+
+                <td>
+
+                    {{ sale.customer_name or 'Walk-in Customer' }}
+
+                </td>
+
+                <td>
+
+                    {{ sale.items|length }}
+                    item{{ '' if sale.items|length == 1 else 's' }}
+
+                </td>
+
+                <td>
+
+                    {{ sale.date.strftime('%d %b %Y') }}
+
+                </td>
+
+                <td class="text-end fw-semibold">
+
+                    RM {{ '{:,.2f}'.format(sale.amount) }}
+
+                </td>
+
+                <td class="text-end">
+
+                    {% if sale.document_type == 'invoice' %}
+
+                        <a
+                            href="{{ url_for('main.invoice', sale_id=sale.id) }}"
+                            class="btn btn-sm btn-outline-primary"
+                            target="_blank"
+                        >
+                            Invoice
+                        </a>
+
+                    {% else %}
+
+                        <a
+                            href="{{ url_for('main.receipt', sale_id=sale.id) }}"
+                            class="btn btn-sm btn-outline-success"
+                            target="_blank"
+                        >
+                            Receipt
+                        </a>
+
+                    {% endif %}
+
+                    <a
+                        href="{{ url_for('main.view_sale', sale_id=sale.id) }}"
+                        class="btn btn-sm btn-outline-primary"
+                    >
+                        Details
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="6" class="text-center text-muted py-5">
+
+                    No sales match these filters.
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
 </div>
+
+</div>
+
+<!-- Pagination -->
+
+{% if pagination.total > 0 %}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mt-4 gap-3">
+
+<div class="text-muted small">
+
+    Showing
+    {{ ((pagination.page - 1) * pagination.per_page) + 1 }}
+    -
+    {{ ((pagination.page - 1) * pagination.per_page) + pagination.items|length }}
+    of {{ pagination.total }} sales
+
+</div>
+
+<div class="d-flex align-items-center gap-2">
+
+    {% if pagination.has_prev %}
+
+    <a
+        href="{{ url_for(
+            'main.sales',
+            page=pagination.prev_num,
+            filter_date=request.args.get('filter_date', ''),
+            category=request.args.get('category', ''),
+            payment_method=request.args.get('payment_method', ''),
+            document_type=request.args.get('document_type', '')
+        ) }}"
+        class="btn btn-outline-secondary btn-sm"
+    >
+        Previous
+    </a>
+
+    {% endif %}
+
+    <span class="small px-2">
+
+        Page {{ pagination.page }} of {{ pagination.pages }}
+
+    </span>
+
+    {% if pagination.has_next %}
+
+    <a
+        href="{{ url_for(
+            'main.sales',
+            page=pagination.next_num,
+            filter_date=request.args.get('filter_date', ''),
+            category=request.args.get('category', ''),
+            payment_method=request.args.get('payment_method', ''),
+            document_type=request.args.get('document_type', '')
+        ) }}"
+        class="btn btn-outline-secondary btn-sm"
+    >
+        Next
+    </a>
+
+    {% endif %}
+
+</div>
+
+</div>
+
+{% endif %}
+
 {% endblock %}
