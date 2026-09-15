@@ -81,7 +81,7 @@
     <div class="print-actions">
         <button type="button" onclick="window.print()">Print receipt</button>
         <a href="{{ url_for('main.edit_sale', sale_id=sale.id) }}">Edit details</a>
-        <a href="{{ url_for('main.view_sale', sale_id=sale.id) }}">Back to sale</a>
+        <a href="{{ url_for('main.add_sale') }}">Back to sale</a>
     </div>
 </body>
 </html>
