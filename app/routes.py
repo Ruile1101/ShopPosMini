@@ -163,7 +163,7 @@ def add_sale(document_type='receipt'):
             }
             for index in range(max(len(descriptions), len(quantities), len(prices), len(product_ids), len(service_types))):
                 quantity = int(quantities[index]) if index < len(quantities) else 1
-                unit = units[index] if index < len(units) and units[index] in {'PC', 'BOX', 'PACK', 'SET', 'UNIT'} else 'PC'
+                unit = units[index] if index < len(units) and units[index] in {'PC', 'BOX', 'PACK', 'SET', 'UNIT', 'BOOK'} else 'PC'
                 unit_price = round(float(prices[index]), 2) if index < len(prices) and prices[index] else 0.00
                 service_type = service_types[index] if index < len(service_types) else 'custom'
                 description = descriptions[index].strip() if index < len(descriptions) else ''
