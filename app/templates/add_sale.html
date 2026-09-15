@@ -70,7 +70,7 @@ function updateItem(item) { item.querySelector('.line-total').textContent = `RM 
     if (!category || !productWrap || !product) { updateItem(item); return; }
     const isStationery = category.value === 'Stationery';
     productWrap.classList.toggle('d-none', !isStationery);
-    product.required = isStationery;
+    product.required = false;
     if (!isStationery) product.value = '';
 }
 function bindItem(item) {
