@@ -60,14 +60,45 @@
               </div>
               {% endif %}
 
-              <div class="col-md-1">
+              <div class="col-md-2">
                 <label class="form-label small fw-semibold">Qty</label>
                 <input name="quantity" type="number" min="1" value="{{ item.quantity }}" class="form-control quantity" required>
               </div>
               <div class="col-md-2">
-                <label class="form-label small fw-semibold">Unit price (RM)</label>
-                <input name="unit_price" type="number" min="0" step="0.01" value="{{ '{:.2f}'.format(item.unit_price) }}" class="form-control unit-price" required>
-              </div>
+    <label class="form-label small fw-semibold price-label">
+        {% if item.is_lump_sum %}
+            Total price (RM)
+        {% else %}
+            Unit price (RM)
+        {% endif %}
+    </label>
+
+    <input
+        name="unit_price"
+        type="number"
+        min="0"
+        step="0.01"
+        value="{% if item.is_lump_sum %}{{ '{:.2f}'.format(item.line_total) }}{% else %}{{ '{:.2f}'.format(item.unit_price) }}{% endif %}"
+        class="form-control unit-price"
+        required
+    >
+</div>
+
+<div class="col-md-2">
+    <div class="form-check mt-4">
+        <input
+            class="form-check-input lump-sum"
+            type="checkbox"
+            name="lump_sum"
+            value="1"
+            {% if item.is_lump_sum %}checked{% endif %}
+        >
+
+        <label class="form-check-label small">
+            Lump Sum
+        </label>
+    </div>
+</div>
             </div>
             <div class="d-flex justify-content-between mt-3">
               <small class="text-muted line-label">Line total</small>
@@ -159,7 +190,36 @@
       </div>
       {% endif %}
       <div class="col-md-1"><label class="form-label small fw-semibold">Qty</label><input name="quantity" type="number" min="1" value="1" class="form-control quantity" required></div>
-      <div class="col-md-2"><label class="form-label small fw-semibold">Unit price (RM)</label><input name="unit_price" type="number" min="0" step="0.01" value="0.00" class="form-control unit-price" required></div>
+      <div class="col-md-2">
+    <label class="form-label small fw-semibold price-label">
+        Unit price (RM)
+    </label>
+
+    <input
+        name="unit_price"
+        type="number"
+        min="0"
+        step="0.01"
+        value="0.00"
+        class="form-control unit-price"
+        required
+    >
+</div>
+
+<div class="col-md-2">
+    <div class="form-check mt-4">
+        <input
+            class="form-check-input lump-sum"
+            type="checkbox"
+            name="lump_sum"
+            value="1"
+        >
+
+        <label class="form-check-label small">
+            Lump Sum
+        </label>
+    </div>
+</div>
     </div>
     <div class="d-flex justify-content-between mt-3"><small class="text-muted">Line total</small><strong class="line-total">RM 0.00</strong><button type="button" class="btn btn-link btn-sm text-danger remove-item">Remove</button></div>
   </div>
@@ -168,12 +228,48 @@
 <script>
 const items = document.getElementById('items');
 function updateItem(item) {
-  const qty = Number(item.querySelector('.quantity').value || 0);
-  const price = Number(item.querySelector('.unit-price').value || 0);
-  item.querySelector('.line-total').textContent = `RM ${(qty * price).toFixed(2)}`;
-  document.getElementById('grand-total').textContent = `RM ${[...document.querySelectorAll('.sale-item')].reduce((sum, row) => {
-    return sum + Number(row.querySelector('.quantity').value || 0) * Number(row.querySelector('.unit-price').value || 0);
-  }, 0).toFixed(2)}`;
+  const qty = Number(
+    item.querySelector('.quantity').value || 0
+  );
+
+  const price = Number(
+    item.querySelector('.unit-price').value || 0
+  );
+
+  const lumpSum = item.querySelector('.lump-sum')?.checked;
+
+  const lineTotal = lumpSum
+    ? price
+    : qty * price;
+
+  item.querySelector('.line-total').textContent =
+    `RM ${lineTotal.toFixed(2)}`;
+
+  const grandTotal = [
+    ...document.querySelectorAll('.sale-item')
+  ].reduce((sum, row) => {
+
+    const rowQty = Number(
+      row.querySelector('.quantity').value || 0
+    );
+
+    const rowPrice = Number(
+      row.querySelector('.unit-price').value || 0
+    );
+
+    const rowLumpSum =
+      row.querySelector('.lump-sum')?.checked;
+
+    return sum + (
+      rowLumpSum
+        ? rowPrice
+        : rowQty * rowPrice
+    );
+
+  }, 0);
+
+  document.getElementById('grand-total').textContent =
+    `RM ${grandTotal.toFixed(2)}`;
 }
 function toggleProduct(item) {
   const category = item.querySelector('.category');
@@ -230,6 +326,46 @@ document.getElementById('add-item').addEventListener('click', () => {
   const item = document.getElementById('item-template').content.cloneNode(true).firstElementChild;
   items.appendChild(item);
   bindItem(item);
+  const lumpSum = item.querySelector('.lump-sum');
+
+if (lumpSum) {
+    lumpSum.addEventListener('change', () => {
+        const priceInput = item.querySelector('.unit-price');
+        const priceLabel = item.querySelector('.price-label');
+
+        if (lumpSum.checked) {
+            priceLabel.textContent = 'Total price (RM)';
+
+            // Convert the existing normal total into lump-sum total
+            const qty = Number(
+                item.querySelector('.quantity').value || 0
+            );
+
+            const unitPrice = Number(
+                priceInput.value || 0
+            );
+
+            priceInput.value = (qty * unitPrice).toFixed(2);
+        } else {
+            priceLabel.textContent = 'Unit price (RM)';
+
+            // Convert lump-sum total back to unit price
+            const qty = Number(
+                item.querySelector('.quantity').value || 0
+            );
+
+            const totalPrice = Number(
+                priceInput.value || 0
+            );
+
+            priceInput.value = qty > 0
+                ? (totalPrice / qty).toFixed(2)
+                : '0.00';
+        }
+
+        updateItem(item);
+    });
+}
 });
 </script>
 {% endblock %}

@@ -534,7 +534,8 @@ def add_sale(document_type='receipt'):
                     if '|||' in description
                     else 'PC',
                     unit_price=unit_price,
-                    line_total=line_total
+                    line_total=line_total,
+                    is_lump_sum=is_lump_sum
                 )
             )
 
@@ -626,6 +627,7 @@ def edit_sale(sale_id):
             prices = request.form.getlist('unit_price')
             product_ids = request.form.getlist('product_id')
             service_types = request.form.getlist('service_type')
+            lump_sums = request.form.getlist('lump_sum')
 
             if sale.document_type == 'invoice':
                 # The editable invoice row is a single service-style item; the per-row category is forced to Other.
@@ -659,12 +661,16 @@ def edit_sale(sale_id):
             else:
                 if not sale.items:
                     raise ValueError
+                lump_sums = request.form.getlist('lump_sum')
                 for index, item in enumerate(sale.items):
                     item.category = categories[index] if index < len(categories) else item.category
                     item.description = descriptions[index].strip() if index < len(descriptions) else item.description
                     item.quantity = int(quantities[index]) if index < len(quantities) and quantities[index] else item.quantity
-                    item.unit_price = round(float(prices[index]), 2) if index < len(prices) and prices[index] else item.unit_price
-                    item.line_total = round(item.quantity * item.unit_price, 2)
+                    is_lump_sum = index < len(lump_sums) and lump_sums[index] == '1'
+                    item.is_lump_sum = is_lump_sum
+                    entered_price = float(prices[index]) if index < len(prices) and prices[index] else 0.00
+                    if is_lump_sum: item.line_total = round(entered_price, 2); item.unit_price = entered_price / item.quantity if item.quantity else 0
+                    else: item.unit_price = round(entered_price, 2); item.line_total = round(item.quantity * item.unit_price, 2)
                     product_id = int(product_ids[index]) if index < len(product_ids) and product_ids[index] else None
                     item.product_id = product_id
                     item.product = Product.query.get(product_id) if product_id else None

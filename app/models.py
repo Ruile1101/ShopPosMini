@@ -36,6 +36,12 @@ class Sale(db.Model):
 class SaleItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
+    is_lump_sum = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=False
+    )
+
     sale_id = db.Column(
         db.Integer,
         db.ForeignKey('sale.id'),
