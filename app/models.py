@@ -35,15 +35,62 @@ class Sale(db.Model):
 
 class SaleItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    sale_id = db.Column(db.Integer, db.ForeignKey('sale.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=True)
-    category = db.Column(db.String(30), nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    quantity = db.Column(db.Integer, nullable=False)
-    unit_price = db.Column(db.Float, nullable=False)
-    line_total = db.Column(db.Float, nullable=False)
-    sale = db.relationship('Sale', back_populates='items')
-    product = db.relationship('Product', backref=db.backref('sale_items', lazy=True))
+
+    sale_id = db.Column(
+        db.Integer,
+        db.ForeignKey('sale.id'),
+        nullable=False
+    )
+
+    product_id = db.Column(
+        db.Integer,
+        db.ForeignKey('product.id'),
+        nullable=True
+    )
+
+    category = db.Column(
+        db.String(30),
+        nullable=False
+    )
+
+    description = db.Column(
+        db.Text,
+        nullable=True
+    )
+
+    quantity = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
+    unit = db.Column(
+        db.String(20),
+        nullable=False,
+        default='PC'
+    )
+
+    unit_price = db.Column(
+        db.Float,
+        nullable=False
+    )
+
+    line_total = db.Column(
+        db.Float,
+        nullable=False
+    )
+
+    sale = db.relationship(
+        'Sale',
+        back_populates='items'
+    )
+
+    product = db.relationship(
+        'Product',
+        backref=db.backref(
+            'sale_items',
+            lazy=True
+        )
+    )
 
 
 
