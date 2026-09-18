@@ -282,6 +282,43 @@ function toggleProduct(item) {
   if (!isStationery) product.value = '';
 }
 function bindItem(item) {
+    const lumpSum = item.querySelector('.lump-sum');
+
+  if (lumpSum) {
+    lumpSum.addEventListener('change', () => {
+      const priceInput = item.querySelector('.unit-price');
+      const priceLabel = item.querySelector('.price-label');
+
+      const qty = Number(
+        item.querySelector('.quantity').value || 0
+      );
+
+      if (lumpSum.checked) {
+        priceLabel.textContent = 'Total price (RM)';
+
+        const unitPrice = Number(
+          priceInput.value || 0
+        );
+
+        priceInput.value = (
+          qty * unitPrice
+        ).toFixed(2);
+
+      } else {
+        priceLabel.textContent = 'Unit price (RM)';
+
+        const totalPrice = Number(
+          priceInput.value || 0
+        );
+
+        priceInput.value = qty > 0
+          ? (totalPrice / qty).toFixed(2)
+          : '0.00';
+      }
+
+      updateItem(item);
+    });
+  }
   item.querySelectorAll('input, select, textarea').forEach(control => control.addEventListener('input', () => updateItem(item)));
   const categorySelect = item.querySelector('.category');
   if (categorySelect) {
@@ -326,46 +363,6 @@ document.getElementById('add-item').addEventListener('click', () => {
   const item = document.getElementById('item-template').content.cloneNode(true).firstElementChild;
   items.appendChild(item);
   bindItem(item);
-  const lumpSum = item.querySelector('.lump-sum');
-
-if (lumpSum) {
-    lumpSum.addEventListener('change', () => {
-        const priceInput = item.querySelector('.unit-price');
-        const priceLabel = item.querySelector('.price-label');
-
-        if (lumpSum.checked) {
-            priceLabel.textContent = 'Total price (RM)';
-
-            // Convert the existing normal total into lump-sum total
-            const qty = Number(
-                item.querySelector('.quantity').value || 0
-            );
-
-            const unitPrice = Number(
-                priceInput.value || 0
-            );
-
-            priceInput.value = (qty * unitPrice).toFixed(2);
-        } else {
-            priceLabel.textContent = 'Unit price (RM)';
-
-            // Convert lump-sum total back to unit price
-            const qty = Number(
-                item.querySelector('.quantity').value || 0
-            );
-
-            const totalPrice = Number(
-                priceInput.value || 0
-            );
-
-            priceInput.value = qty > 0
-                ? (totalPrice / qty).toFixed(2)
-                : '0.00';
-        }
-
-        updateItem(item);
-    });
-}
 });
 </script>
 {% endblock %}

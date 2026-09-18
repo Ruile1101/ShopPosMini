@@ -432,7 +432,8 @@ def add_sale(document_type='receipt'):
                         quantity,
                         unit_price,
                         product,
-                        line_total
+                        line_total,
+                        is_lump_sum
                     )
                 )
 
@@ -476,7 +477,7 @@ def add_sale(document_type='receipt'):
         first_product = next(
             (
                 product
-                for _, _, _, _, product, _ in items
+                for _, _, _, _, product, _, _ in items
                 if product
             ),
             None
@@ -520,7 +521,8 @@ def add_sale(document_type='receipt'):
             quantity,
             unit_price,
             product,
-            line_total
+            line_total,
+            is_lump_sum
         ) in items:
 
             db.session.add(
@@ -630,14 +632,16 @@ def edit_sale(sale_id):
             lump_sums = request.form.getlist('lump_sum')
 
             if sale.document_type == 'invoice':
-                # The editable invoice row is a single service-style item; the per-row category is forced to Other.
                 if not sale.items:
                     raise ValueError
                 item = sale.items[0]
                 item.description = descriptions[0].strip() if descriptions else item.description
                 item.quantity = int(quantities[0]) if quantities and quantities[0] else item.quantity
-                item.unit_price = round(float(prices[0]), 2) if prices and prices[0] else item.unit_price
-                item.line_total = round(item.quantity * item.unit_price, 2)
+                entered_price = float(prices[0]) if prices and prices[0] else 0.00
+                is_lump_sum = (bool(lump_sums) and lump_sums[0] == '1')
+                item.is_lump_sum = is_lump_sum
+                if is_lump_sum: item.line_total=round(entered_price, 2) ;item.unit_price = entered_price / item.quantity if item.quantity else 0
+                else: item.unit_price = round(entered_price, 2); item.line_total = round(item.quantity * item.unit_price, 2)
                 if service_types and service_types[0] != 'custom':
                     item.description = descriptions[0].strip() if descriptions and descriptions[0].strip() else service_types[0]
                 item.category = 'Other'
@@ -645,7 +649,7 @@ def edit_sale(sale_id):
                 item.product_id = product_id
                 item.product = Product.query.get(product_id) if product_id else None
                 subtotal = round(
-                sum(i.quantity * i.unit_price for i in sale.items),
+                sum((i.line_total or 0) for i in sale.items),
                 2
                 )
 
