@@ -330,10 +330,6 @@ def add_sale(document_type='receipt'):
                             or fixed_prices[service_type]['description']
                         )
 
-                        # Keep the user-entered price if Lump Sum is used.
-                        if not is_lump_sum:
-                            unit_price = fixed_prices[service_type]['price']
-
                     else:
                         description = (
                             description
@@ -359,10 +355,6 @@ def add_sale(document_type='receipt'):
                             description
                             or fixed_prices[service_type]['description']
                         )
-
-                        # Keep the user-entered price if Lump Sum is used.
-                        if not is_lump_sum:
-                            unit_price = fixed_prices[service_type]['price']
 
                     else:
                         description = description or 'Service item'
