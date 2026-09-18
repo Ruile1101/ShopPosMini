@@ -1,168 +1,1140 @@
 {% extends 'base.html' %}
+
 {% block title %}New Sale | MinBookShop{% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between align-items-end mb-4"><div><p class="text-uppercase text-muted small fw-bold mb-1">Checkout</p><h1 class="mb-1">New sale</h1><p class="text-muted mb-0">Choose receipt or invoice form, then add services or stationery items.</p></div><a href="{{ url_for('main.sales') }}" class="btn btn-outline-secondary">Sale history</a></div>
+
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <p class="text-uppercase text-muted small fw-bold mb-1">Checkout</p>
+        <h1 class="mb-1">New sale</h1>
+        <p class="text-muted mb-0">Choose receipt or invoice form, then add services or stationery items.</p>
+    </div>
+    <a href="{{ url_for('main.sales') }}" class="btn btn-outline-secondary">Sale history</a>
+</div>
+
 <div class="card mb-4">
-  <div class="card-body">
-    <div class="d-flex gap-2 align-items-center">
-      <span class="fw-semibold">Document type:</span>
-      <a class="btn btn-sm {% if document_type == 'receipt' %}btn-success{% else %}btn-outline-secondary{% endif %}" href="{{ url_for('main.add_sale', document_type='receipt') }}">Receipt</a>
-      <a class="btn btn-sm {% if document_type == 'invoice' %}btn-primary{% else %}btn-outline-secondary{% endif %}" href="{{ url_for('main.add_sale', document_type='invoice') }}">Invoice</a>
+    <div class="card-body">
+        <div class="d-flex gap-2 align-items-center">
+            <span class="fw-semibold">Document type:</span>
+
+            <a
+                class="btn btn-sm {% if document_type == 'receipt' %}btn-success{% else %}btn-outline-secondary{% endif %}"
+                href="{{ url_for('main.add_sale', document_type='receipt') }}"
+            >
+                Receipt
+            </a>
+
+            <a
+                class="btn btn-sm {% if document_type == 'invoice' %}btn-primary{% else %}btn-outline-secondary{% endif %}"
+                href="{{ url_for('main.add_sale', document_type='invoice') }}"
+            >
+                Invoice
+            </a>
+        </div>
     </div>
-  </div>
-</div>
-<form method="POST" action="{{ url_for('main.add_sale', document_type=document_type) }}" id="sale-form">
-<div class="mb-3"><label class="form-label small fw-semibold">Customer name <span class="text-muted">optional</span></label><input type="text" name="customer_name" maxlength="120" class="form-control" placeholder="customer"></div>
-<div class="row g-4"><div class="col-lg-8"><div class="card"><div class="card-header py-3 d-flex justify-content-between align-items-center"><h5 class="mb-0">{{ document_type|capitalize }} items</h5><button type="button" class="btn btn-sm btn-outline-primary" id="add-item">+ Add item</button></div><div class="card-body" id="items">
-<div class="sale-item border rounded-3 p-3 mb-3"><div class="row g-2 align-items-end">
-{% if document_type == 'invoice' %}
-<div class="col-md-2"><label class="form-label small fw-semibold">Service type</label><select name="service_type" class="form-select service-type"><option value="custom">Custom type</option>{% for choice in invoice_service_choices %}<option value="{{ choice.value }}" data-description="{{ choice.description }}" data-price="{{ '{:.2f}'.format(choice.price) }}">{{ choice.label }}</option>{% endfor %}</select></div>
-<div class="col-md-3"><label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label><textarea name="description" class="form-control description" rows="3" placeholder="Custom service type"></textarea></div>
-{% else %}
-<div class="col-md-2"><label class="form-label small fw-semibold">Category</label><select name="category" class="form-select category" required>{% for category in categories %}<option>{{ category }}</option>{% endfor %}</select></div>
-<div class="col-md-2 stationery-product d-none"><label class="form-label small fw-semibold">Stationery product</label><select name="product_id" class="form-select product"><option value="">Choose product</option>{% for product in products %}<option value="{{ product.id }}" data-price="{{ product.price }}">{{ product.name }} (RM {{ '{:.2f}'.format(product.price) }})</option>{% endfor %}</select></div>
-<div class="col-md-3"><label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label><textarea name="description" class="form-control description" rows="3" placeholder="e.g. A4 colour copy"></textarea></div>
-{% endif %}
-<div class="col-md-2">
-    <label class="form-label small fw-semibold">Qty</label>
-    <input name="quantity" type="number" min="1" value="1" class="form-control quantity" required>
 </div>
 
-<div class="col-md-2">
-    <label class="form-label small fw-semibold">Unit</label>
-    <select name="unit" class="form-select unit">
-        <option value="PC">PC</option>
-        <option value="BOX">BOX</option>
-        <option value="PACK">PACK</option>
-        <option value="SET">SET</option>
-        <option value="UNIT">UNIT</option>
-        <option value="BOOK">BOOK</option>
-    </select>
-</div>
+<form
+    method="POST"
+    action="{{ url_for('main.add_sale', document_type=document_type) }}"
+    id="sale-form"
+>
 
-<div class="col-md-2">
-    <label class="form-label small fw-semibold price-label">Unit price (RM)</label>
-    <input name="unit_price" type="number" min="0" step="0.01" value="0.00" class="form-control unit-price" required>
-</div>
-
-<div class="col-md-2">
-    <div class="form-check mt-4">
-        <input class="form-check-input lump-sum" type="checkbox" name="lump_sum" value="1">
-        <label class="form-check-label small">
-            Lump Sum
+    <div class="mb-3">
+        <label class="form-label small fw-semibold">
+            Customer name <span class="text-muted">optional</span>
         </label>
+
+        <input
+            type="text"
+            name="customer_name"
+            maxlength="120"
+            class="form-control"
+            placeholder="customer"
+        >
     </div>
-</div>
-</div><div class="d-flex justify-content-between mt-3"><small class="text-muted line-label">Line total</small><strong class="line-total">RM 0.00</strong><button type="button" class="btn btn-link btn-sm text-danger remove-item">Remove</button></div></div>
-</div></div></div>
-<div class="col-lg-4"><div class="card sticky-lg-top" style="top: 92px;"><div class="card-body"><h5 class="mb-4">Payment</h5><label class="form-label small fw-semibold">Sale date</label><input type="date" name="date" value="{{ today }}" class="form-control mb-3" required><label class="form-label small fw-semibold">Payment method</label><select name="payment_method" class="form-select mb-4">{% for method in payment_methods %}<option>{{ method }}</option>{% endfor %}</select>{% if document_type == 'invoice' %}<div class="row g-2 mb-3"><div class="col-6"><label class="form-label small fw-semibold">Discount (RM)</label><input type="number" min="0" step="0.01" name="discount" value="0.00" class="form-control"></div><div class="col-6"><label class="form-label small fw-semibold">Deposit (RM)</label><input type="number" min="0" step="0.01" name="deposit" value="0.00" class="form-control"></div></div>{% endif %}<div class="d-flex justify-content-between align-items-center border-top pt-3 mb-4"><span class="text-muted">Grand total</span><strong class="fs-3" id="grand-total">RM 0.00</strong></div><button class="btn btn-success btn-lg w-100" type="submit">Complete sale</button></div></div></div></div>
+
+    <div class="row g-4">
+
+        <div class="col-lg-8">
+
+            <div class="card">
+
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+
+                    <h5 class="mb-0">
+                        {{ document_type|capitalize }} items
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-primary"
+                        id="add-item"
+                    >
+                        + Add item
+                    </button>
+
+                </div>
+
+                <div class="card-body" id="items">
+
+                    <div class="sale-item border rounded-3 p-3 mb-3">
+
+                        <div class="row g-2 align-items-end">
+
+                            {% if document_type == 'invoice' %}
+
+                            <div class="col-md-2">
+                                <label class="form-label small fw-semibold">
+                                    Service type
+                                </label>
+
+                                <select
+                                    name="service_type"
+                                    class="form-select service-type"
+                                >
+                                    <option value="custom">
+                                        Custom type
+                                    </option>
+
+                                    {% for choice in invoice_service_choices %}
+                                    <option
+                                        value="{{ choice.value }}"
+                                        data-description="{{ choice.description }}"
+                                        data-price="{{ '{:.2f}'.format(choice.price) }}"
+                                    >
+                                        {{ choice.label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label small fw-semibold">
+                                    Description
+                                    <span class="text-muted">optional</span>
+                                </label>
+
+                                <textarea
+                                    name="description"
+                                    class="form-control description"
+                                    rows="3"
+                                    placeholder="Custom service type"
+                                ></textarea>
+                            </div>
+
+                            {% else %}
+
+                            <div class="col-md-2">
+                                <label class="form-label small fw-semibold">
+                                    Category
+                                </label>
+
+                                <select
+                                    name="category"
+                                    class="form-select category"
+                                    required
+                                >
+                                    {% for category in categories %}
+                                    <option>
+                                        {{ category }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-2 stationery-product d-none">
+                                <label class="form-label small fw-semibold">
+                                    Stationery product
+                                </label>
+
+                                <select
+                                    name="product_id"
+                                    class="form-select product"
+                                >
+                                    <option value="">
+                                        Choose product
+                                    </option>
+
+                                    {% for product in products %}
+                                    <option
+                                        value="{{ product.id }}"
+                                        data-price="{{ product.price }}"
+                                    >
+                                        {{ product.name }}
+                                        (RM {{ '{:.2f}'.format(product.price) }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label small fw-semibold">
+                                    Description
+                                    <span class="text-muted">optional</span>
+                                </label>
+
+                                <textarea
+                                    name="description"
+                                    class="form-control description"
+                                    rows="3"
+                                    placeholder="e.g. A4 colour copy"
+                                ></textarea>
+                            </div>
+
+                            {% endif %}
+
+                            <div class="col-md-2">
+                                <label class="form-label small fw-semibold">
+                                    Qty
+                                </label>
+
+                                <input
+                                    name="quantity"
+                                    type="number"
+                                    min="1"
+                                    value="1"
+                                    class="form-control quantity"
+                                    required
+                                >
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label small fw-semibold">
+                                    Unit
+                                </label>
+
+                                <select
+                                    name="unit"
+                                    class="form-select unit"
+                                >
+                                    <option value="PC">PC</option>
+                                    <option value="BOX">BOX</option>
+                                    <option value="PACK">PACK</option>
+                                    <option value="SET">SET</option>
+                                    <option value="UNIT">UNIT</option>
+                                    <option value="BOOK">BOOK</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label small fw-semibold price-label">
+                                    Unit price (RM)
+                                </label>
+
+                                <input
+                                    name="unit_price"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value="0.00"
+                                    class="form-control unit-price"
+                                    required
+                                >
+                            </div>
+
+                            <div class="col-md-2">
+
+                                <div class="form-check mt-4">
+
+                                    <input
+                                        class="form-check-input lump-sum"
+                                        type="checkbox"
+                                        name="lump_sum"
+                                        value="1"
+                                    >
+
+                                    <label class="form-check-label small">
+                                        Lump Sum
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-3">
+
+                            <small class="text-muted line-label">
+                                Line total
+                            </small>
+
+                            <strong class="line-total">
+                                RM 0.00
+                            </strong>
+
+                            <button
+                                type="button"
+                                class="btn btn-link btn-sm text-danger remove-item"
+                            >
+                                Remove
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div
+                class="card sticky-lg-top"
+                style="top: 92px;"
+            >
+
+                <div class="card-body">
+
+                    <h5 class="mb-4">
+                        Payment
+                    </h5>
+
+                    <label class="form-label small fw-semibold">
+                        Sale date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="date"
+                        value="{{ today }}"
+                        class="form-control mb-3"
+                        required
+                    >
+
+                    <label class="form-label small fw-semibold">
+                        Payment method
+                    </label>
+
+                    <select
+                        name="payment_method"
+                        class="form-select mb-4"
+                    >
+                        {% for method in payment_methods %}
+                        <option>
+                            {{ method }}
+                        </option>
+                        {% endfor %}
+                    </select>
+
+                    {% if document_type == 'invoice' %}
+
+                    <div class="row g-2 mb-3">
+
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">
+                                Discount (RM)
+                            </label>
+
+                            <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                name="discount"
+                                value="0.00"
+                                class="form-control"
+                            >
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">
+                                Deposit (RM)
+                            </label>
+
+                            <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                name="deposit"
+                                value="0.00"
+                                class="form-control"
+                            >
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-4">
+
+                        <span class="text-muted">
+                            Grand total
+                        </span>
+
+                        <strong
+                            class="fs-3"
+                            id="grand-total"
+                        >
+                            RM 0.00
+                        </strong>
+
+                    </div>
+
+                    <button
+                        class="btn btn-success btn-lg w-100"
+                        type="submit"
+                    >
+                        Complete sale
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </form>
-<template id="item-template"><div class="sale-item border rounded-3 p-3 mb-3"><div class="row g-2 align-items-end">
-{% if document_type == 'invoice' %}
-<div class="col-md-2"><label class="form-label small fw-semibold">Service type</label><select name="service_type" class="form-select service-type"><option value="custom">Custom type</option>{% for choice in invoice_service_choices %}<option value="{{ choice.value }}" data-description="{{ choice.description }}" data-price="{{ '{:.2f}'.format(choice.price) }}">{{ choice.label }}</option>{% endfor %}</select></div>
-<div class="col-md-3"><label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label><textarea name="description" class="form-control description" rows="3" placeholder="Custom service type"></textarea></div>
-{% else %}
-<div class="col-md-2"><label class="form-label small fw-semibold">Category</label><select name="category" class="form-select category" required>{% for category in categories %}<option>{{ category }}</option>{% endfor %}</select></div>
-<div class="col-md-2 stationery-product d-none"><label class="form-label small fw-semibold">Stationery product</label><select name="product_id" class="form-select product"><option value="">Choose product</option>{% for product in products %}<option value="{{ product.id }}" data-price="{{ product.price }}">{{ product.name }} (RM {{ '{:.2f}'.format(product.price) }})</option>{% endfor %}</select></div>
-<div class="col-md-3"><label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label><textarea name="description" class="form-control description" rows="3" placeholder="e.g. A4 colour copy"></textarea></div>
-{% endif %}
-<div class="col-md-1">
-    <label class="form-label small fw-semibold">Qty</label>
-    <input name="quantity" type="number" min="1" value="1" class="form-control quantity" required>
-</div>
 
-<div class="col-md-2">
-    <label class="form-label small fw-semibold">Unit</label>
-    <select name="unit" class="form-select unit">
-        <option value="PC">PC</option>
-        <option value="BOX">BOX</option>
-        <option value="PACK">PACK</option>
-        <option value="SET">SET</option>
-        <option value="UNIT">UNIT</option>
-        <option value="BOOK">BOOK</option>
-    </select>
-</div>
 
-<div class="col-md-2">
-    <label class="form-label small fw-semibold">Unit price (RM)</label>
-    <input name="unit_price" type="number" min="0" step="0.01" value="0.00" class="form-control unit-price" required>
-</div>
-</div><div class="d-flex justify-content-between mt-3"><small class="text-muted">Line total</small><strong class="line-total">RM 0.00</strong><button type="button" class="btn btn-link btn-sm text-danger remove-item">Remove</button></div></div></template>
+<template id="item-template">
+
+    <div class="sale-item border rounded-3 p-3 mb-3">
+
+        <div class="row g-2 align-items-end">
+
+            {% if document_type == 'invoice' %}
+
+            <div class="col-md-2">
+
+                <label class="form-label small fw-semibold">
+                    Service type
+                </label>
+
+                <select
+                    name="service_type"
+                    class="form-select service-type"
+                >
+
+                    <option value="custom">
+                        Custom type
+                    </option>
+
+                    {% for choice in invoice_service_choices %}
+
+                    <option
+                        value="{{ choice.value }}"
+                        data-description="{{ choice.description }}"
+                        data-price="{{ '{:.2f}'.format(choice.price) }}"
+                    >
+                        {{ choice.label }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <label class="form-label small fw-semibold">
+                    Description
+                    <span class="text-muted">optional</span>
+                </label>
+
+                <textarea
+                    name="description"
+                    class="form-control description"
+                    rows="3"
+                    placeholder="Custom service type"
+                ></textarea>
+
+            </div>
+
+            {% else %}
+
+            <div class="col-md-2">
+
+                <label class="form-label small fw-semibold">
+                    Category
+                </label>
+
+                <select
+                    name="category"
+                    class="form-select category"
+                    required
+                >
+
+                    {% for category in categories %}
+
+                    <option>
+                        {{ category }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="col-md-2 stationery-product d-none">
+
+                <label class="form-label small fw-semibold">
+                    Stationery product
+                </label>
+
+                <select
+                    name="product_id"
+                    class="form-select product"
+                >
+
+                    <option value="">
+                        Choose product
+                    </option>
+
+                    {% for product in products %}
+
+                    <option
+                        value="{{ product.id }}"
+                        data-price="{{ product.price }}"
+                    >
+                        {{ product.name }}
+                        (RM {{ '{:.2f}'.format(product.price) }})
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <label class="form-label small fw-semibold">
+                    Description
+                    <span class="text-muted">optional</span>
+                </label>
+
+                <textarea
+                    name="description"
+                    class="form-control description"
+                    rows="3"
+                    placeholder="e.g. A4 colour copy"
+                ></textarea>
+
+            </div>
+
+            {% endif %}
+
+
+            <div class="col-md-2">
+
+                <label class="form-label small fw-semibold">
+                    Qty
+                </label>
+
+                <input
+                    name="quantity"
+                    type="number"
+                    min="1"
+                    value="1"
+                    class="form-control quantity"
+                    required
+                >
+
+            </div>
+
+
+            <div class="col-md-2">
+
+                <label class="form-label small fw-semibold">
+                    Unit
+                </label>
+
+                <select
+                    name="unit"
+                    class="form-select unit"
+                >
+
+                    <option value="PC">PC</option>
+                    <option value="BOX">BOX</option>
+                    <option value="PACK">PACK</option>
+                    <option value="SET">SET</option>
+                    <option value="UNIT">UNIT</option>
+                    <option value="BOOK">BOOK</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="col-md-2">
+
+                <label class="form-label small fw-semibold price-label">
+                    Unit price (RM)
+                </label>
+
+                <input
+                    name="unit_price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="0.00"
+                    class="form-control unit-price"
+                    required
+                >
+
+            </div>
+
+
+            <div class="col-md-2">
+
+                <div class="form-check mt-4">
+
+                    <input
+                        class="form-check-input lump-sum"
+                        type="checkbox"
+                        name="lump_sum"
+                        value="1"
+                    >
+
+                    <label class="form-check-label small">
+                        Lump Sum
+                    </label>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="d-flex justify-content-between mt-3">
+
+            <small class="text-muted">
+                Line total
+            </small>
+
+            <strong class="line-total">
+                RM 0.00
+            </strong>
+
+            <button
+                type="button"
+                class="btn btn-link btn-sm text-danger remove-item"
+            >
+                Remove
+            </button>
+
+        </div>
+
+    </div>
+
+</template>
+
+
 <script>
+
 const items = document.getElementById('items');
+
+
 function updateItem(item) {
-    const quantity = Number(item.querySelector('.quantity').value || 0);
-    const price = Number(item.querySelector('.unit-price').value || 0);
-    const lumpSum = item.querySelector('.lump-sum')?.checked;
 
-    const lineTotal = lumpSum
-        ? price
-        : quantity * price;
+    if (!item) {
+        return;
+    }
 
-    item.querySelector('.line-total').textContent =
-        `RM ${lineTotal.toFixed(2)}`;
+    const quantityInput =
+        item.querySelector('.quantity');
 
-    const grandTotal = [...document.querySelectorAll('.sale-item')].reduce((sum, row) => {
-        const qty = Number(row.querySelector('.quantity').value || 0);
-        const rowPrice = Number(row.querySelector('.unit-price').value || 0);
-        const rowLumpSum = row.querySelector('.lump-sum')?.checked;
+    const priceInput =
+        item.querySelector('.unit-price');
 
-        return sum + (rowLumpSum ? rowPrice : qty * rowPrice);
-    }, 0);
+    const lumpSumInput =
+        item.querySelector('.lump-sum');
 
-    const discount = Number(
-        document.querySelector('input[name="discount"]')?.value || 0
-    );
+    const quantity =
+        Number(quantityInput?.value || 0);
 
-    document.getElementById('grand-total').textContent =
-        `RM ${Math.max(0, grandTotal - discount).toFixed(2)}`;
+    const price =
+        Number(priceInput?.value || 0);
+
+    const lumpSum =
+        lumpSumInput?.checked || false;
+
+    const lineTotal =
+        lumpSum
+            ? price
+            : quantity * price;
+
+    const lineTotalElement =
+        item.querySelector('.line-total');
+
+    if (lineTotalElement) {
+
+        lineTotalElement.textContent =
+            `RM ${lineTotal.toFixed(2)}`;
+
+    }
+
+    const grandTotal =
+        [...document.querySelectorAll('.sale-item')]
+        .reduce((sum, row) => {
+
+            const qty =
+                Number(
+                    row.querySelector('.quantity')?.value || 0
+                );
+
+            const rowPrice =
+                Number(
+                    row.querySelector('.unit-price')?.value || 0
+                );
+
+            const rowLumpSum =
+                row.querySelector('.lump-sum')?.checked || false;
+
+            const rowTotal =
+                rowLumpSum
+                    ? rowPrice
+                    : qty * rowPrice;
+
+            return sum + rowTotal;
+
+        }, 0);
+
+    const discount =
+        Number(
+            document.querySelector(
+                'input[name="discount"]'
+            )?.value || 0
+        );
+
+    const finalTotal =
+        Math.max(
+            0,
+            grandTotal - discount
+        );
+
+    const grandTotalElement =
+        document.getElementById('grand-total');
+
+    if (grandTotalElement) {
+
+        grandTotalElement.textContent =
+            `RM ${finalTotal.toFixed(2)}`;
+
+    }
+
 }
-function bindItem(item) {
-    item.querySelectorAll('input, select, textarea').forEach(control => control.addEventListener('input', () => updateItem(item)));
-    const categorySelect = item.querySelector('.category');
-    if (categorySelect) {
-        categorySelect.addEventListener('change', () => { toggleProduct(item); updateItem(item); });
-    }
-    const productSelect = item.querySelector('.product');
-    if (productSelect) {
-        productSelect.addEventListener('change', event => { const option = event.target.selectedOptions[0]; if (option.dataset.price) item.querySelector('.unit-price').value = option.dataset.price; updateItem(item); });
-    }
-    const serviceTypeSelect = item.querySelector('.service-type');
-    if (serviceTypeSelect) {
-        serviceTypeSelect.addEventListener('change', event => {
-            const option = event.target.selectedOptions[0];
-            if (event.target.value === 'custom') {
-                item.querySelector('.description').value = '';
-                item.querySelector('.unit-price').value = '0.00';
-                item.querySelector('.description').placeholder = 'Custom service type';
-                updateItem(item);
-                return;
-            }
-            item.querySelector('.description').value = option.dataset.description || '';
-            item.querySelector('.unit-price').value = option.dataset.price || '0.00';
-            updateItem(item);
-        });
-    }
-    item.querySelector('.remove-item').addEventListener('click', () => { if (document.querySelectorAll('.sale-item').length > 1) { item.remove(); updateItem(document.querySelector('.sale-item')); } });
-    toggleProduct(item); updateItem(item);
-}
-bindItem(document.querySelector('.sale-item')); document.querySelector('input[name="discount"]')?.addEventListener('input', () => updateItem(document.querySelector('.sale-item'))); document.getElementById('add-item').addEventListener('click', () => { const item = document.getElementById('item-template').content.cloneNode(true).firstElementChild; items.appendChild(item); bindItem(item); updateItem(item); });
 
-const lumpSum = item.querySelector('.lump-sum');
 
-if (lumpSum) {
-    lumpSum.addEventListener('change', () => {
-        const priceInput = item.querySelector('.unit-price');
-        const priceLabel = item.querySelector('.price-label');
+function toggleProduct(item) {
 
-        if (lumpSum.checked) {
-            priceLabel.textContent = 'Total price (RM)';
-        } else {
-            priceLabel.textContent = 'Unit price (RM)';
+    if (!item) {
+        return;
+    }
+
+    const category =
+        item.querySelector('.category');
+
+    const productContainer =
+        item.querySelector('.stationery-product');
+
+    if (!category || !productContainer) {
+        return;
+    }
+
+    if (category.value === 'Stationery') {
+
+        productContainer.classList.remove('d-none');
+
+    } else {
+
+        productContainer.classList.add('d-none');
+
+        const product =
+            item.querySelector('.product');
+
+        if (product) {
+            product.value = '';
         }
 
-        updateItem(item);
-    });
+    }
+
 }
+
+
+function bindItem(item) {
+
+    if (!item) {
+        return;
+    }
+
+
+    item.querySelectorAll(
+        'input, select, textarea'
+    ).forEach(control => {
+
+        control.addEventListener(
+            'input',
+            () => updateItem(item)
+        );
+
+    });
+
+
+    const lumpSum =
+        item.querySelector('.lump-sum');
+
+
+    if (lumpSum) {
+
+        lumpSum.addEventListener(
+            'change',
+            () => {
+
+                const priceInput =
+                    item.querySelector('.unit-price');
+
+                const priceLabel =
+                    item.querySelector('.price-label');
+
+                const quantity =
+                    Number(
+                        item.querySelector(
+                            '.quantity'
+                        )?.value || 0
+                    );
+
+                if (!priceInput) {
+                    return;
+                }
+
+
+                const currentPrice =
+                    Number(
+                        priceInput.value || 0
+                    );
+
+
+                if (lumpSum.checked) {
+
+                    if (priceLabel) {
+
+                        priceLabel.textContent =
+                            'Total price (RM)';
+
+                    }
+
+                    if (
+                        quantity > 0 &&
+                        currentPrice > 0
+                    ) {
+
+                        priceInput.value =
+                            (
+                                currentPrice *
+                                quantity
+                            ).toFixed(2);
+
+                    }
+
+                } else {
+
+                    if (priceLabel) {
+
+                        priceLabel.textContent =
+                            'Unit price (RM)';
+
+                    }
+
+                    if (
+                        quantity > 0 &&
+                        currentPrice > 0
+                    ) {
+
+                        priceInput.value =
+                            (
+                                currentPrice /
+                                quantity
+                            ).toFixed(2);
+
+                    }
+
+                }
+
+
+                updateItem(item);
+
+            }
+        );
+
+    }
+
+
+    const categorySelect =
+        item.querySelector('.category');
+
+
+    if (categorySelect) {
+
+        categorySelect.addEventListener(
+            'change',
+            () => {
+
+                toggleProduct(item);
+
+                updateItem(item);
+
+            }
+        );
+
+    }
+
+
+    const productSelect =
+        item.querySelector('.product');
+
+
+    if (productSelect) {
+
+        productSelect.addEventListener(
+            'change',
+            event => {
+
+                const option =
+                    event.target.selectedOptions[0];
+
+                if (
+                    option &&
+                    option.dataset.price
+                ) {
+
+                    const priceInput =
+                        item.querySelector(
+                            '.unit-price'
+                        );
+
+                    if (priceInput) {
+
+                        priceInput.value =
+                            option.dataset.price;
+
+                    }
+
+                }
+
+                updateItem(item);
+
+            }
+        );
+
+    }
+
+
+    const serviceTypeSelect =
+        item.querySelector('.service-type');
+
+
+    if (serviceTypeSelect) {
+
+        serviceTypeSelect.addEventListener(
+            'change',
+            event => {
+
+                const option =
+                    event.target.selectedOptions[0];
+
+                const description =
+                    item.querySelector(
+                        '.description'
+                    );
+
+                const priceInput =
+                    item.querySelector(
+                        '.unit-price'
+                    );
+
+
+                if (
+                    event.target.value ===
+                    'custom'
+                ) {
+
+                    if (description) {
+
+                        description.value = '';
+
+                        description.placeholder =
+                            'Custom service type';
+
+                    }
+
+                    if (priceInput) {
+
+                        priceInput.value =
+                            '0.00';
+
+                    }
+
+                    updateItem(item);
+
+                    return;
+
+                }
+
+
+                if (description) {
+
+                    description.value =
+                        option.dataset.description || '';
+
+                }
+
+
+                if (priceInput) {
+
+                    priceInput.value =
+                        option.dataset.price || '0.00';
+
+                }
+
+
+                updateItem(item);
+
+            }
+        );
+
+    }
+
+
+    const removeButton =
+        item.querySelector('.remove-item');
+
+
+    if (removeButton) {
+
+        removeButton.addEventListener(
+            'click',
+            () => {
+
+                const allItems =
+                    document.querySelectorAll(
+                        '.sale-item'
+                    );
+
+                if (allItems.length <= 1) {
+                    return;
+                }
+
+                item.remove();
+
+                const remainingItem =
+                    document.querySelector(
+                        '.sale-item'
+                    );
+
+                if (remainingItem) {
+
+                    updateItem(
+                        remainingItem
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    toggleProduct(item);
+
+    updateItem(item);
+
+}
+
+
+const firstItem =
+    document.querySelector('.sale-item');
+
+
+if (firstItem) {
+
+    bindItem(firstItem);
+
+}
+
+
+const discountInput =
+    document.querySelector(
+        'input[name="discount"]'
+    );
+
+
+if (discountInput) {
+
+    discountInput.addEventListener(
+        'input',
+        () => {
+
+            const firstItem =
+                document.querySelector(
+                    '.sale-item'
+                );
+
+            if (firstItem) {
+
+                updateItem(firstItem);
+
+            }
+
+        }
+    );
+
+}
+
+
+const addItemButton =
+    document.getElementById('add-item');
+
+
+if (addItemButton) {
+
+    addItemButton.addEventListener(
+        'click',
+        () => {
+
+            const template =
+                document.getElementById(
+                    'item-template'
+                );
+
+            if (!template) {
+                return;
+            }
+
+            const newItem =
+                template.content
+                    .cloneNode(true)
+                    .firstElementChild;
+
+            if (!newItem) {
+                return;
+            }
+
+            items.appendChild(newItem);
+
+            bindItem(newItem);
+
+            updateItem(newItem);
+
+        }
+    );
+
+}
+
 </script>
+
 {% endblock %}
