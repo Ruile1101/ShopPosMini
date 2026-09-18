@@ -23,7 +23,7 @@
 <div class="col-md-2 stationery-product d-none"><label class="form-label small fw-semibold">Stationery product</label><select name="product_id" class="form-select product"><option value="">Choose product</option>{% for product in products %}<option value="{{ product.id }}" data-price="{{ product.price }}">{{ product.name }} (RM {{ '{:.2f}'.format(product.price) }})</option>{% endfor %}</select></div>
 <div class="col-md-3"><label class="form-label small fw-semibold">Description <span class="text-muted">optional</span></label><textarea name="description" class="form-control description" rows="3" placeholder="e.g. A4 colour copy"></textarea></div>
 {% endif %}
-<div class="col-md-1">
+<div class="col-md-2">
     <label class="form-label small fw-semibold">Qty</label>
     <input name="quantity" type="number" min="1" value="1" class="form-control quantity" required>
 </div>
