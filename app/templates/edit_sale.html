@@ -169,6 +169,41 @@
 
                             <div class="col-md-2">
 
+                                <label class="form-label small fw-semibold">
+                                    Unit
+                                </label>
+
+                                 <select name="unit" class="form-select unit" required>
+                                    {% set current_unit = item.unit or 'PC' %}
+
+                                    <option value="PC" {% if current_unit == 'PC' %}selected{% endif %}>
+                                        PC
+                                    </option>
+
+                                    <option value="BOX" {% if current_unit == 'BOX' %}selected{% endif %}>
+                                        BOX
+                                    </option>
+
+                                    <option value="PACK" {% if current_unit == 'PACK' %}selected{% endif %}>
+                                        PACK
+                                    </option>
+
+                                    <option value="SET" {% if current_unit == 'SET' %}selected{% endif %}>
+                                        SET
+                                    </option>
+
+                                    <option value="UNIT" {% if current_unit == 'UNIT' %}selected{% endif %}>
+                                        UNIT
+                                    </option>
+
+                                    <option value="BOOK" {% if current_unit == 'BOOK' %}selected{% endif %}>
+                                        BOOK
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+
                                 <label class="form-label small fw-semibold price-label">
                                     {% if item.is_lump_sum %}
                                     Total price (RM)
@@ -493,6 +528,22 @@
                     required
                 >
 
+            </div>
+
+            <div class="col-md-2">
+                
+                <label class="form-label small fw-semibold">
+                    Unit
+                </label>
+
+                <select name="unit" class="form-select unit" required>
+                    <option value="PC" selected>PC</option>
+                    <option value="BOX">BOX</option>
+                    <option value="PACK">PACK</option>
+                    <option value="SET">SET</option>
+                    <option value="UNIT">UNIT</option>
+                    <option value="BOOK">BOOK</option>
+                </select>
             </div>
 
             <div class="col-md-2">

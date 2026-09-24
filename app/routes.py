@@ -592,105 +592,482 @@ def add_sale(document_type='receipt'):
 @main.route('/edit_sale/<int:sale_id>', methods=['GET', 'POST'])
 def edit_sale(sale_id):
     sale = Sale.query.get_or_404(sale_id)
+
     invoice_service_choices = [
-        {'value': 'normal_stamp_24', 'label': 'Normal Stamp (Round 24mm)', 'description': 'NORMAL STAMP - ROUND 24MM', 'price': 13.00},
-        {'value': 'normal_stamp_28', 'label': 'Normal Stamp (Round 28mm)', 'description': 'NORMAL STAMP - ROUND 28MM', 'price': 14.00},
-        {'value': 'color24_blue', 'label': 'Colop R24 Blue Ink', 'description': 'COLOP R24 - BLUE INK', 'price': 37.00},
-        {'value': 'color24_black', 'label': 'Colop R24 Black Ink', 'description': 'COLOP R24 - BLACK INK', 'price': 37.00},
-        {'value': 'color30_blue', 'label': 'Colop R30 Blue Ink', 'description': 'COLOP R30 - BLUE INK', 'price': 45.00},
-        {'value': 'color30_black', 'label': 'Colop R30 Black Ink', 'description': 'COLOP R30 - BLACK INK', 'price': 45.00},
-        {'value': 'p40_blue', 'label': 'Colop P40 Blue Ink', 'description': 'COLOP P40 - BLUE INK', 'price': 47.00},
-        {'value': 'p40_black', 'label': 'Colop P40 Black Ink', 'description': 'COLOP P40 - BLACK INK', 'price': 47.00},
-        {'value': 'common_seal', 'label': 'Common Seal', 'description': 'COMMON SEAL', 'price': 120.00},
+        {
+            'value': 'normal_stamp_24',
+            'label': 'Normal Stamp (Round 24mm)',
+            'description': 'NORMAL STAMP - ROUND 24MM',
+            'price': 13.00
+        },
+        {
+            'value': 'normal_stamp_28',
+            'label': 'Normal Stamp (Round 28mm)',
+            'description': 'NORMAL STAMP - ROUND 28MM',
+            'price': 14.00
+        },
+        {
+            'value': 'color24_blue',
+            'label': 'Colop R24 Blue Ink',
+            'description': 'COLOP R24 - BLUE INK',
+            'price': 37.00
+        },
+        {
+            'value': 'color24_black',
+            'label': 'Colop R24 Black Ink',
+            'description': 'COLOP R24 - BLACK INK',
+            'price': 37.00
+        },
+        {
+            'value': 'color30_blue',
+            'label': 'Colop R30 Blue Ink',
+            'description': 'COLOP R30 - BLUE INK',
+            'price': 45.00
+        },
+        {
+            'value': 'color30_black',
+            'label': 'Colop R30 Black Ink',
+            'description': 'COLOP R30 - BLACK INK',
+            'price': 45.00
+        },
+        {
+            'value': 'p40_blue',
+            'label': 'Colop P40 Blue Ink',
+            'description': 'COLOP P40 - BLUE INK',
+            'price': 47.00
+        },
+        {
+            'value': 'p40_black',
+            'label': 'Colop P40 Black Ink',
+            'description': 'COLOP P40 - BLACK INK',
+            'price': 47.00
+        },
+        {
+            'value': 'common_seal',
+            'label': 'Common Seal',
+            'description': 'COMMON SEAL',
+            'price': 120.00
+        },
     ]
 
     if request.method == 'POST':
         try:
-            sale_date = datetime.strptime(request.form.get('date', ''), '%Y-%m-%d').date()
-            payment_method = request.form.get('payment_method', 'Cash')
+            sale_date = datetime.strptime(
+                request.form.get('date', ''),
+                '%Y-%m-%d'
+            ).date()
+
+            payment_method = request.form.get(
+                'payment_method',
+                'Cash'
+            )
+
             if payment_method not in PAYMENT_METHODS:
                 raise ValueError
 
-            customer_name = request.form.get('customer_name', '').strip() or None
-            sale.customer_name = customer_name
-            sale.payment_method = payment_method
-            sale.date = sale_date
+            customer_name = (
+                request.form.get('customer_name', '').strip()
+                or None
+            )
 
-            discount = round(float(request.form.get('discount', '0') or '0'), 2)
-            deposit = round(float(request.form.get('deposit', '0') or '0'), 2)
+            discount = round(
+                float(request.form.get('discount', '0') or '0'),
+                2
+            )
+
+            deposit = round(
+                float(request.form.get('deposit', '0') or '0'),
+                2
+            )
+
             if discount < 0 or deposit < 0:
                 raise ValueError
-            sale.discount = discount
-            sale.deposit = deposit
 
             categories = request.form.getlist('category')
             descriptions = request.form.getlist('description')
             quantities = request.form.getlist('quantity')
+            units = request.form.getlist('unit')
             prices = request.form.getlist('unit_price')
             product_ids = request.form.getlist('product_id')
             service_types = request.form.getlist('service_type')
             lump_sums = request.form.getlist('lump_sum')
 
-            if sale.document_type == 'invoice':
-                if not sale.items:
-                    raise ValueError
-                item = sale.items[0]
-                item.description = descriptions[0].strip() if descriptions else item.description
-                item.quantity = int(quantities[0]) if quantities and quantities[0] else item.quantity
-                entered_price = float(prices[0]) if prices and prices[0] else 0.00
-                is_lump_sum = (bool(lump_sums) and lump_sums[0] == '1')
-                item.is_lump_sum = is_lump_sum
-                if is_lump_sum: item.line_total=round(entered_price, 2) ;item.unit_price = entered_price / item.quantity if item.quantity else 0
-                else: item.unit_price = round(entered_price, 2); item.line_total = round(item.quantity * item.unit_price, 2)
-                if service_types and service_types[0] != 'custom':
-                    item.description = descriptions[0].strip() if descriptions and descriptions[0].strip() else service_types[0]
-                item.category = 'Other'
-                product_id = int(product_ids[0]) if product_ids and product_ids[0] else None
-                item.product_id = product_id
-                item.product = Product.query.get(product_id) if product_id else None
-                subtotal = round(
-                sum((i.line_total or 0) for i in sale.items),
-                2
+            # ---------------------------------------------------------
+            # Determine how many item rows were submitted.
+            #
+            # We use descriptions / quantities / prices as the main
+            # row indicators. This allows newly-added rows to be saved.
+            # ---------------------------------------------------------
+            item_count = max(
+                len(descriptions),
+                len(quantities),
+                len(prices),
+                len(categories),
+                len(product_ids),
+                len(service_types),
+                len(units)
+            )
+
+            if item_count < 1:
+                raise ValueError
+
+            fixed_prices = {
+                'normal_stamp_24': {
+                    'description': 'NORMAL STAMP - ROUND 24MM',
+                    'price': 13.00
+                },
+                'normal_stamp_28': {
+                    'description': 'NORMAL STAMP - ROUND 28MM',
+                    'price': 14.00
+                },
+                'color24_blue': {
+                    'description': 'COLOP R24 - BLUE INK',
+                    'price': 37.00
+                },
+                'color24_black': {
+                    'description': 'COLOP R24 - BLACK INK',
+                    'price': 37.00
+                },
+                'color30_blue': {
+                    'description': 'COLOP R30 - BLUE INK',
+                    'price': 45.00
+                },
+                'color30_black': {
+                    'description': 'COLOP R30 - BLACK INK',
+                    'price': 45.00
+                },
+                'p40_blue': {
+                    'description': 'COLOP P40 - BLUE INK',
+                    'price': 47.00
+                },
+                'p40_black': {
+                    'description': 'COLOP P40 - BLACK INK',
+                    'price': 47.00
+                },
+                'common_seal': {
+                    'description': 'COMMON SEAL',
+                    'price': 120.00
+                },
+            }
+
+            submitted_items = []
+
+            for index in range(item_count):
+
+                # -----------------------------------------------------
+                # Quantity
+                # -----------------------------------------------------
+                quantity = (
+                    int(quantities[index])
+                    if index < len(quantities)
+                    and quantities[index]
+                    else 1
                 )
 
-                discount = max(0, float(sale.discount or 0))
-
-                if discount > subtotal:
-                    discount = subtotal
-
-                sale.discount = round(discount, 2)
-                sale.amount = round(subtotal - sale.discount, 2)
-                sale.quantity = sum(i.quantity for i in sale.items)
-                sale.product_id = item.product_id
-            else:
-                if not sale.items:
+                if quantity < 1:
                     raise ValueError
-                lump_sums = request.form.getlist('lump_sum')
-                for index, item in enumerate(sale.items):
-                    item.category = categories[index] if index < len(categories) else item.category
-                    item.description = descriptions[index].strip() if index < len(descriptions) else item.description
-                    item.quantity = int(quantities[index]) if index < len(quantities) and quantities[index] else item.quantity
-                    is_lump_sum = index < len(lump_sums) and lump_sums[index] == '1'
-                    item.is_lump_sum = is_lump_sum
-                    entered_price = float(prices[index]) if index < len(prices) and prices[index] else 0.00
-                    if is_lump_sum: item.line_total = round(entered_price, 2); item.unit_price = entered_price / item.quantity if item.quantity else 0
-                    else: item.unit_price = round(entered_price, 2); item.line_total = round(item.quantity * item.unit_price, 2)
-                    product_id = int(product_ids[index]) if index < len(product_ids) and product_ids[index] else None
-                    item.product_id = product_id
-                    item.product = Product.query.get(product_id) if product_id else None
 
-                subtotal = round(sum((i.quantity or 0) * (i.unit_price or 0) for i in (sale.items or [])), 2); sale.discount = round(min(subtotal, max(0, float(sale.discount or 0))), 2); sale.amount = round(subtotal - sale.discount, 2); sale.quantity = sum((i.quantity or 0) for i in (sale.items or [])); db.session.commit()
-            db.session.commit();
-            flash('Sale updated successfully!', 'success')
+                # -----------------------------------------------------
+                # Unit
+                # -----------------------------------------------------
+                unit = (
+                    units[index].strip().upper()
+                    if index < len(units) and units[index]
+                    else 'PC'
+                )
+
+                allowed_units = {
+                    'PC',
+                    'BOX',
+                    'PACK',
+                    'SET',
+                    'UNIT',
+                    'BOOK'
+                }
+
+                if unit not in allowed_units:
+                    unit = 'PC'
+
+                # -----------------------------------------------------
+                # Description
+                # -----------------------------------------------------
+                description = (
+                    descriptions[index].strip()
+                    if index < len(descriptions)
+                    and descriptions[index]
+                    else ''
+                )
+
+                # -----------------------------------------------------
+                # Category
+                # -----------------------------------------------------
+                if sale.document_type == 'invoice':
+                    category = 'Other'
+                else:
+                    category = (
+                        categories[index]
+                        if index < len(categories)
+                        and categories[index]
+                        else 'Other'
+                    )
+
+                    if category not in SALE_CATEGORIES:
+                        raise ValueError
+
+                # -----------------------------------------------------
+                # Service type for invoice
+                # -----------------------------------------------------
+                service_type = (
+                    service_types[index]
+                    if index < len(service_types)
+                    and service_types[index]
+                    else 'custom'
+                )
+
+                if sale.document_type == 'invoice':
+
+                    if service_type == 'custom':
+                        if not description:
+                            description = 'Invoice service item'
+
+                    elif service_type in fixed_prices:
+                        # Only use the default description when the
+                        # description field is empty.
+                        description = (
+                            description
+                            or fixed_prices[service_type]['description']
+                        )
+
+                    else:
+                        description = (
+                            description
+                            or 'Invoice service item'
+                        )
+
+                else:
+                    if not description:
+                        description = 'Service item'
+
+                # -----------------------------------------------------
+                # Product
+                # -----------------------------------------------------
+                product_id = (
+                    int(product_ids[index])
+                    if index < len(product_ids)
+                    and product_ids[index]
+                    else None
+                )
+
+                product = (
+                    Product.query.get(product_id)
+                    if product_id
+                    else None
+                )
+
+                # -----------------------------------------------------
+                # Lump Sum
+                #
+                # Example:
+                # Qty = 3000
+                # Lump Sum = checked
+                # Price = RM550
+                #
+                # Database:
+                # unit_price = 550 / 3000
+                # line_total = 550
+                # -----------------------------------------------------
+                is_lump_sum = (
+                    index < len(lump_sums)
+                    and lump_sums[index] == '1'
+                )
+
+                entered_price = (
+                    float(prices[index])
+                    if index < len(prices)
+                    and prices[index]
+                    else 0.00
+                )
+
+                if entered_price < 0:
+                    raise ValueError
+
+                if is_lump_sum:
+
+                    line_total = round(
+                        entered_price,
+                        2
+                    )
+
+                    unit_price = (
+                        entered_price / quantity
+                        if quantity
+                        else 0
+                    )
+
+                else:
+
+                    unit_price = round(
+                        entered_price,
+                        2
+                    )
+
+                    line_total = round(
+                        quantity * unit_price,
+                        2
+                    )
+
+                submitted_items.append({
+                    'category': category,
+                    'description': description,
+                    'quantity': quantity,
+                    'unit': unit,
+                    'unit_price': unit_price,
+                    'line_total': line_total,
+                    'product_id': product_id,
+                    'product': product,
+                    'is_lump_sum': is_lump_sum
+                })
+
+            # ---------------------------------------------------------
+            # UPDATE EXISTING ITEMS + CREATE NEW ITEMS
+            # ---------------------------------------------------------
+            existing_items = list(sale.items)
+
+            for index, data in enumerate(submitted_items):
+
+                if index < len(existing_items):
+                    # Update existing SaleItem
+                    item = existing_items[index]
+
+                else:
+                    # NEW SaleItem
+                    item = SaleItem(
+                        sale=sale
+                    )
+                    db.session.add(item)
+
+                item.category = data['category']
+                item.description = data['description']
+                item.quantity = data['quantity']
+                item.unit = data['unit']
+                item.unit_price = data['unit_price']
+                item.line_total = data['line_total']
+                item.product_id = data['product_id']
+                item.product = data['product']
+                item.is_lump_sum = data['is_lump_sum']
+
+            # ---------------------------------------------------------
+            # REMOVE ITEMS THAT WERE DELETED FROM THE EDIT PAGE
+            # ---------------------------------------------------------
+            if len(existing_items) > len(submitted_items):
+
+                for item in existing_items[len(submitted_items):]:
+                    db.session.delete(item)
+
+            # ---------------------------------------------------------
+            # Update Sale information
+            # ---------------------------------------------------------
+            sale.customer_name = customer_name
+            sale.payment_method = payment_method
+            sale.date = sale_date
+            sale.deposit = deposit
+
+            # Calculate subtotal using line_total.
+            #
+            # IMPORTANT:
+            # Do NOT calculate using quantity * unit_price here,
+            # because that breaks Lump Sum values such as:
+            #
+            # 3000 pcs = RM550
+            # ---------------------------------------------------------
+            subtotal = round(
+                sum(
+                    item_data['line_total']
+                    for item_data in submitted_items
+                ),
+                2
+            )
+
+            discount = max(
+                0,
+                float(discount or 0)
+            )
+
+            if discount > subtotal:
+                discount = subtotal
+
+            sale.discount = round(
+                discount,
+                2
+            )
+
+            sale.amount = round(
+                subtotal - sale.discount,
+                2
+            )
+
+            sale.quantity = sum(
+                item_data['quantity']
+                for item_data in submitted_items
+            )
+
+            # Keep legacy Sale.product_id pointing to the first product.
+            first_product = next(
+                (
+                    item_data['product']
+                    for item_data in submitted_items
+                    if item_data['product']
+                ),
+                None
+            )
+
+            sale.product_id = (
+                first_product.id
+                if first_product
+                else None
+            )
+
+            db.session.commit()
+
+            flash(
+                'Sale updated successfully!',
+                'success'
+            )
+
             if sale.document_type == 'invoice':
-                return redirect(url_for('main.invoice', sale_id=sale.id))
-            return redirect(url_for('main.receipt', sale_id=sale.id))
+                return redirect(
+                    url_for(
+                        'main.invoice',
+                        sale_id=sale.id
+                    )
+                )
+
+            return redirect(
+                url_for(
+                    'main.receipt',
+                    sale_id=sale.id
+                )
+            )
+
         except (TypeError, ValueError, IndexError):
             db.session.rollback()
-            flash('Update failed. Check the item rows, quantities, unit prices, and customer name.', 'danger')
-            return redirect(url_for('main.edit_sale', sale_id=sale.id))
 
-    products = Product.query.order_by(Product.name).all()
+            flash(
+                'Update failed. Check the item rows, quantities, unit prices, and customer name.',
+                'danger'
+            )
+
+            return redirect(
+                url_for(
+                    'main.edit_sale',
+                    sale_id=sale.id
+                )
+            )
+
+    products = Product.query.order_by(
+        Product.name
+    ).all()
+
     return render_template(
         'edit_sale.html',
         sale=sale,
