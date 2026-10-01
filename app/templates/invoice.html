@@ -775,6 +775,9 @@
                             {% elif unit == 'BOOK' %}
                                 {% set unit_display = 'BOOK' if item.quantity == 1 else 'BOOKS' %}
 
+                            {% elif unit == 'PAD' %}
+                                {% set unit_display = 'PAD' if item.quantity == 1 else 'PADS' %}
+
                             {% else %}
                                 {% set unit_display = unit %}
                             {% endif %}

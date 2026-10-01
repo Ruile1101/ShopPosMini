@@ -288,7 +288,8 @@ def add_sale(document_type='receipt'):
                     'PACK',
                     'SET',
                     'UNIT',
-                    'BOOK'
+                    'BOOK',
+                    'PAD'
                 }:
                     unit = 'PC'
 
@@ -783,6 +784,7 @@ def edit_sale(sale_id):
                     'SET',
                     'UNIT',
                     'BOOK'
+                    'PAD'
                 }
 
                 if unit not in allowed_units:
